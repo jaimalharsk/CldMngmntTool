@@ -1,0 +1,214 @@
+{% load static %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Home Page</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #0d0d0d;
+            color: white;
+            overflow: hidden;
+        }
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 2;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background: linear-gradient(90deg, #005f73, #0a9396);
+        }
+        .navbar h1 {
+            margin: 0;
+            font-size: 22px;
+        }
+        .menu-toggle {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+        }
+        .menu-toggle span {
+            background: white;
+            height: 3px;
+            width: 25px;
+            margin: 4px 0;
+        }
+        .buttons {
+            display: flex;
+            gap: 15px;
+        }
+        .buttons a {
+            text-decoration: none;
+            padding: 8px 16px;
+            color: white;
+            border-radius: 5px;
+            background: #005f73;
+            transition: 0.3s;
+            font-size: 14px;
+        }
+        .buttons a:hover {
+            background: #0a9396;
+        }
+        .container {
+            position: absolute;
+            top: 80px;
+            width: 100%;
+            text-align: center;
+            font-size: 24px;
+            z-index: 2;
+        }
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+        @media (max-width: 768px) {
+            .menu-toggle {
+                display: flex;
+            }
+            .buttons {
+                position: absolute;
+                top: 60px;
+                left: 0;
+                width: 100%;
+                flex-direction: column;
+                background: #0a9396;
+                display: none;
+                padding: 10px 0;
+                z-index: 3;
+            }
+            .buttons a {
+                padding: 10px;
+            }
+            .buttons.show {
+                display: flex;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="navbar">
+        <h1>My App</h1>
+        <div class="menu-toggle" onclick="toggleMenu()">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+        <div class="buttons" id="navbar-buttons">
+            <a href="{% url 'login' %}">Login</a>
+            <a href="{% url 'register' %}">Register</a>
+            <a href="{% url 'dashboard' %}">Go to Dashboard</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <p>Welcome to My App! A modern platform for your needs.</p>
+    </div>
+
+    <canvas id="scene"></canvas>
+
+    <script>
+        function toggleMenu() {
+            const buttons = document.getElementById('navbar-buttons');
+            buttons.classList.toggle('show');
+        }
+    </script>
+
+    <!-- Office 3D Script -->
+    <script type="module">
+      import * as THREE from 'https://cdn.skypack.dev/three@0.132.2';
+      import { OrbitControls } from 'https://cdn.skypack.dev/three/examples/jsm/controls/OrbitControls';
+
+      const scene = new THREE.Scene();
+      scene.background = new THREE.Color(0x111111);
+
+      const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 1000);
+      camera.position.set(4, 3, 6);
+
+      const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('scene'), antialias: true });
+      renderer.setSize(window.innerWidth, window.innerHeight);
+
+      const controls = new OrbitControls(camera, renderer.domElement);
+      controls.enableDamping = true;
+
+      const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
+      scene.add(ambientLight);
+      const pointLight = new THREE.PointLight(0xffffff, 1);
+      pointLight.position.set(5, 6, 5);
+      scene.add(pointLight);
+
+      const floor = new THREE.Mesh(new THREE.PlaneGeometry(6, 6), new THREE.MeshStandardMaterial({ color: 0xdddddd }));
+      floor.rotation.x = -Math.PI / 2;
+      scene.add(floor);
+
+      const backWall = new THREE.Mesh(new THREE.PlaneGeometry(6, 3), new THREE.MeshStandardMaterial({ color: 0xeaeaea }));
+      backWall.position.z = -3;
+      backWall.position.y = 1.5;
+      scene.add(backWall);
+
+      const sideWall = new THREE.Mesh(new THREE.PlaneGeometry(6, 3), new THREE.MeshStandardMaterial({ color: 0xeaeaea }));
+      sideWall.rotation.y = Math.PI / 2;
+      sideWall.position.x = -3;
+      sideWall.position.y = 1.5;
+      scene.add(sideWall);
+
+      const desk = new THREE.Mesh(new THREE.BoxGeometry(2, 0.1, 0.7), new THREE.MeshStandardMaterial({ color: 0x9c6f4a }));
+      desk.position.set(0, 0.5, 0);
+      scene.add(desk);
+
+      const monitorMat = new THREE.MeshStandardMaterial({ color: 0x222 });
+      const monitor = new THREE.BoxGeometry(0.45, 0.3, 0.05);
+      const monitor1 = new THREE.Mesh(monitor, monitorMat);
+      monitor1.position.set(-0.3, 0.75, -0.25);
+      const monitor2 = monitor1.clone();
+      monitor2.position.x = 0.3;
+      scene.add(monitor1, monitor2);
+
+      const chairSeat = new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.3, 0.1, 16), new THREE.MeshStandardMaterial({ color: 0x444 }));
+      chairSeat.position.set(0, 0.3, 1);
+      scene.add(chairSeat);
+
+      const chairBack = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.4, 0.05), new THREE.MeshStandardMaterial({ color: 0x555 }));
+      chairBack.position.set(0, 0.55, 1.15);
+      scene.add(chairBack);
+
+      const serverGeo = new THREE.BoxGeometry(0.4, 1.5, 0.5);
+      const serverMat = new THREE.MeshStandardMaterial({ color: 0x111 });
+      const server1 = new THREE.Mesh(serverGeo, serverMat);
+      server1.position.set(-2, 0.75, -1.5);
+      const server2 = server1.clone();
+      server2.position.z = -1;
+      scene.add(server1, server2);
+
+      const cloudGeo = new THREE.SphereGeometry(0.25, 16, 16);
+      const cloudMat = new THREE.MeshStandardMaterial({ color: 0x88ccee });
+      const cloud = new THREE.Mesh(cloudGeo, cloudMat);
+      cloud.position.set(0.5, 2, -2.95);
+      scene.add(cloud);
+
+      function animate() {
+        requestAnimationFrame(animate);
+        controls.update();
+        renderer.render(scene, camera);
+      }
+
+      animate();
+
+      window.addEventListener('resize', () => {
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+      });
+    </script>
+
+</body>
+</html>
+{% endblock %}

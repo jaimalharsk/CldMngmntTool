@@ -1,0 +1,18 @@
+# Python caches
+*.pyc
+__pycache__/
+
+# Database
+db.sqlite3
+
+# Virtual environment
+venv/
+.env
+
+# PyCharm IDE files
+.idea/
+*.iml
+
+# System files
+.DS_Store
+Thumbs.db

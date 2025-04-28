@@ -1,0 +1,162 @@
+{% extends "subscription_manager/base.html" %}
+{% block content %}
+<div class="dashboard-wrapper">
+    <!-- Collapsible Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h3>User Panel</h3>
+            <button onclick="toggleSidebar()" class="collapse-btn" title="Collapse Sidebar">✖</button>
+        </div>
+        <ul class="sidebar-menu">
+            <li><a href="{% url 'dashboard' %}">Dashboard</a></li>
+            <li><a href="{% url 'export_user_data' %}">Export User Data</a></li>
+            <li><a href="{% url 'logout' %}">Log Out</a></li>
+        </ul>
+    </aside>
+
+    <!-- Sidebar Toggle Button -->
+    <button id="sidebarToggleBtn" onclick="toggleSidebar()" class="toggle-btn" title="Open Sidebar">☰</button>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <h2>User Profile</h2>
+        <div class="profile-box">
+            <p><strong>Name:</strong> John Doe</p>
+            <p><strong>Email:</strong> john.doe@example.com</p>
+            <p><strong>Joined:</strong> 2023-07-14</p>
+            <p><strong>Role:</strong> Admin</p>
+        </div>
+    </main>
+</div>
+
+<style>
+body {
+    margin: 0;
+    font-family: 'Arial', sans-serif;
+    background: linear-gradient(135deg, #00b894, #0984e3);
+    color: #fff;
+    overflow: hidden;
+    height: 98vh;
+}
+
+.dashboard-wrapper {
+    display: flex;
+    height: 100%;
+    overflow: hidden;
+    position: relative;
+}
+
+/* Sidebar */
+.sidebar {
+    background: #2d3436;
+    width: 250px;
+    padding: 20px;
+    color: #fff;
+    transition: transform 0.3s ease;
+    height: 100%;
+    z-index: 2;
+}
+
+.sidebar.collapsed {
+    transform: translateX(-100%);
+}
+
+/* Sidebar Header */
+.sidebar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.collapse-btn {
+    background: none;
+    border: none;
+    font-size: 18px;
+    color: #fff;
+    cursor: pointer;
+}
+
+.sidebar-menu {
+    list-style: none;
+    padding: 0;
+    margin-top: 30px;
+}
+
+.sidebar-menu li {
+    margin: 15px 0;
+}
+
+.sidebar-menu a {
+    color: #fff;
+    text-decoration: none;
+    font-size: 16px;
+}
+
+/* Toggle Button */
+.toggle-btn {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    background: #2d3436;
+    color: #fff;
+    border: none;
+    font-size: 22px;
+    padding: 10px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    display: none;
+    z-index: 3;
+}
+
+.sidebar.collapsed ~ .toggle-btn {
+    display: block;
+}
+
+/* Main Content */
+.main-content {
+    flex-grow: 1;
+    padding: 40px;
+    background-color: rgba(255, 255, 255, 0.95);
+    color: #2d3436;
+    height: 100%;
+    width: 100%;
+    overflow-y: auto;
+}
+
+h2 {
+    color: #2d3436;
+    margin-bottom: 20px;
+}
+
+.profile-box {
+    background: #fff;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    color: #2d3436;
+    max-width: 500px;
+    margin: auto;
+    font-size: 16px;
+}
+
+/* Responsive */
+@media screen and (max-width: 768px) {
+    .dashboard-wrapper {
+        flex-direction: column;
+    }
+
+    .toggle-btn {
+        top: 10px;
+        left: 10px;
+    }
+}
+</style>
+
+<script>
+function toggleSidebar() {
+    const sidebar = document.getElementById("sidebar");
+    const toggleBtn = document.getElementById("sidebarToggleBtn");
+    sidebar.classList.toggle("collapsed");
+}
+</script>
+{% endblock %}

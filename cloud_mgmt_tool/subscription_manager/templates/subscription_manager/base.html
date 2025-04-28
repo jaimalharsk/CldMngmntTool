@@ -1,0 +1,17 @@
+<!-- subscription_manager/templates/subscription_manager/base.html -->
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Cloud Manager</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+    <header><h1>Cloud Management Tool</h1></header>
+
+    {% block content %}
+    {% endblock %}
+
+    <footer><p>© 2025 Cloud Project CWIT</p></footer>
+</body>
+</html>
