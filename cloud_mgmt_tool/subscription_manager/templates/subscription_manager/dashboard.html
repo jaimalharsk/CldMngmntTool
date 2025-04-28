@@ -1,0 +1,293 @@
+{% extends "subscription_manager/base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="dashboard-wrapper">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h3>Menu</h3>
+            <button onclick="toggleSidebar()" class="collapse-btn" title="Collapse Sidebar">✖</button>
+        </div>
+        <ul class="sidebar-menu">
+            <li><a href="{% url 'user_profile' %}">Profile</a></li>
+            <li><a href="{% url 'export_user_data' %}">Export Data</a></li>
+            <li><a href="{% url 'logout' %}">Logout</a></li>
+        </ul>
+    </aside>
+
+    <!-- Toggle Button -->
+    <button id="sidebarToggleBtn" onclick="toggleSidebar()" class="toggle-btn" title="Open Sidebar">☰</button>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <h1>Cloud Management Tool</h1>
+        <h2>Cloud Dashboard</h2>
+
+        <div class="card-container">
+            <div class="card" title="List of active and inactive subscriptions">
+                <h4>Active Subscriptions</h4>
+                <ul>
+                    {% for sub in active_subscriptions %}
+                    <li>{{ sub.name }} - <span class="badge {{ sub.status|lower }}">{{ sub.status }}</span></li>
+                    {% empty %}
+                    <li>No active subscriptions</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div class="card" title="Current monthly cost estimate">
+                <h4>Monthly Cost</h4>
+                <strong>${{ monthly_cost }}</strong>
+            </div>
+            <div class="card" title="Alerts waiting for user action">
+                <h4>Pending Alerts</h4>
+                <strong>{{ pending_alerts }}</strong>
+            </div>
+            <div class="card" title="Configured budget threshold">
+                <h4>Budget Limit</h4>
+                <strong>${{ budget_limit }}</strong>
+            </div>
+        </div>
+
+        <div class="card-container">
+            <div class="card">
+                <h4>Resource Usage</h4>
+                <img src="{% static 'subscription_manager/usage_graph.png' %}" alt="Usage Graph" width="100%">
+            </div>
+            <div class="card">
+                <h4>Billing History</h4>
+                <img src="{% static 'subscription_manager/billing_graph.png' %}" alt="Billing Graph" width="100%">
+            </div>
+        </div>
+
+        <h3>Subscriptions</h3>
+        <div class="export-btns">
+            <button onclick="printTable()">🖨️ Print</button>
+            <button onclick="exportCSV()">⬇️ Export CSV</button>
+            <input type="text" id="filterInput" onkeyup="filterTable()" placeholder="Filter by name...">
+        </div>
+        <div class="table-container">
+            <table id="subscriptionsTable">
+                <thead>
+                    <tr>
+                        <th onclick="sortTable(0)">Name ⬍</th>
+                        <th onclick="sortTable(1)">Status ⬍</th>
+                        <th onclick="sortTable(2)">Last Billed ⬍</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for sub in subscriptions %}
+                    <tr>
+                        <td>{{ sub.name }}</td>
+                        <td><span class="badge {{ sub.status|lower }}">{{ sub.status }}</span></td>
+                        <td>{{ sub.last_billed }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </main>
+</div>
+
+<style>
+body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: #121212;
+    color: #f1f1f1;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.dashboard-wrapper {
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+    position: relative;
+}
+
+.sidebar {
+    background: #1e1e1e;
+    width: 250px;
+    color: white;
+    padding: 20px;
+    transition: transform 0.3s ease;
+    z-index: 2;
+}
+
+.sidebar.collapsed {
+    transform: translateX(-100%);
+}
+
+.sidebar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.sidebar-menu {
+    list-style: none;
+    padding: 0;
+    margin-top: 30px;
+}
+
+.sidebar-menu li {
+    margin: 15px 0;
+}
+
+.sidebar-menu a {
+    color: white;
+    text-decoration: none;
+}
+
+.toggle-btn {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    background: #2d3436;
+    color: white;
+    border: none;
+    font-size: 22px;
+    padding: 10px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    display: none;
+    z-index: 3;
+}
+
+.sidebar.collapsed ~ .toggle-btn {
+    display: block;
+}
+
+.main-content {
+    flex-grow: 1;
+    padding: 20px;
+    background: #2c2c2c;
+    height: 100%;
+    overflow-y: auto;
+}
+
+.card-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.card {
+    background: #1e1e1e;
+    border-radius: 10px;
+    padding: 20px;
+    flex: 1 1 220px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+}
+
+.table-container {
+    background: #1e1e1e;
+    padding: 20px;
+    border-radius: 10px;
+    max-height: 250px;
+    overflow-y: auto;
+}
+
+th, td {
+    padding: 12px 15px;
+    border: 1px solid #444;
+    color: #f1f1f1;
+}
+
+th {
+    background-color: #0984e3;
+    cursor: pointer;
+}
+
+.export-btns {
+    margin-bottom: 10px;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.export-btns input {
+    padding: 6px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+}
+
+.badge {
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 12px;
+    color: #fff;
+    display: inline-block;
+}
+
+.badge.active {
+    background-color: #00b894;
+}
+
+.badge.inactive {
+    background-color: #d63031;
+}
+
+/* Responsive */
+@media screen and (max-width: 768px) {
+    .dashboard-wrapper {
+        flex-direction: column;
+    }
+
+    .toggle-btn {
+        display: block;
+    }
+}
+</style>
+
+<script>
+function toggleSidebar() {
+    document.getElementById("sidebar").classList.toggle("collapsed");
+}
+
+function sortTable(col) {
+    const table = document.getElementById("subscriptionsTable");
+    let rows = Array.from(table.rows).slice(1);
+    let asc = table.getAttribute("data-sort-dir") !== "asc";
+    rows.sort((a, b) => {
+        return a.cells[col].innerText.localeCompare(b.cells[col].innerText) * (asc ? 1 : -1);
+    });
+    table.setAttribute("data-sort-dir", asc ? "asc" : "desc");
+    rows.forEach(row => table.tBodies[0].appendChild(row));
+}
+
+function filterTable() {
+    const input = document.getElementById("filterInput").value.toLowerCase();
+    const rows = document.querySelectorAll("#subscriptionsTable tbody tr");
+    rows.forEach(row => {
+        row.style.display = row.cells[0].innerText.toLowerCase().includes(input) ? "" : "none";
+    });
+}
+
+function printTable() {
+    const printWindow = window.open('', '', 'height=600,width=800');
+    printWindow.document.write('<html><head><title>Subscriptions</title></head><body>');
+    printWindow.document.write(document.getElementById("subscriptionsTable").outerHTML);
+    printWindow.document.write('</body></html>');
+    printWindow.document.close();
+    printWindow.print();
+}
+
+function exportCSV() {
+    const table = document.getElementById("subscriptionsTable");
+    let csv = "";
+    Array.from(table.rows).forEach(row => {
+        let cols = Array.from(row.cells).map(cell => `"${cell.innerText}"`);
+        csv += cols.join(",") + "\n";
+    });
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = "subscriptions.csv";
+    link.click();
+}
+</script>
+{% endblock %}

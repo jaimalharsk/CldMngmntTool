@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Subscription List</title>
+</head>
+<body>
+    <h1>Subscriptions</h1>
+    <ul>
+        {% for subscription in subscriptions %}
+            <li>
+                {{ subscription.name }} - ${{ subscription.cost }} - Renewal Date: {{ subscription.renewal_date }}
+            </li>
+        {% empty %}
+            <li>No subscriptions available.</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
