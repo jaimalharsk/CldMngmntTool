@@ -16,3 +16,5 @@ venv/
 # System files
 .DS_Store
 Thumbs.db
+
+cloud_mgmt_tool/keys.env
