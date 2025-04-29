@@ -1,8 +1,7 @@
 import os
 from dotenv import load_dotenv
 
-# Load your environment variables from keys.env
-load_dotenv(dotenv_path='keys.env')
+load_dotenv()  # This loads the .env file into environment variables
 
 # Azure Configuration
 AZURE_CONFIG = {
