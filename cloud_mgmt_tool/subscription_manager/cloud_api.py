@@ -1,11 +1,23 @@
 import os
+from dotenv import load_dotenv
 
+# Load your environment variables from keys.env
+load_dotenv(dotenv_path='keys.env')
+
+# Azure Configuration
 AZURE_CONFIG = {
-    "CLIENT_ID": os.getenv("79efe962-b1ad-4d66-aea7-8db30d68f0e"),
-    "TENANT_ID": os.getenv("59525466-51eb-4e32-a991-8a80fa2821b4"),
-    "CLIENT_SECRET": os.getenv("-Qt8Q~Pdb00azJKHXziwvfWHnoiKE15uzQWtOcrH"),
+    "CLIENT_ID": os.getenv("AZURE_CLIENT_ID"),
+    "TENANT_ID": os.getenv("AZURE_TENANT_ID"),
+    "CLIENT_SECRET": os.getenv("AZURE_CLIENT_SECRET"),
     "AUTHORITY": f"https://login.microsoftonline.com/{os.getenv('AZURE_TENANT_ID')}",
     "REDIRECT_URI": "http://localhost:8000/accounts/login/callback/",
+}
+
+# AWS Configuration
+AWS_CONFIG = {
+    "ACCESS_KEY_ID": os.getenv("AWS_ACCESS_KEY_ID"),
+    "SECRET_ACCESS_KEY": os.getenv("AWS_SECRET_ACCESS_KEY"),
+    "REGION": os.getenv("AWS_REGION", "us-east-1"),
 }
 
 class CloudAPI:
@@ -14,13 +26,14 @@ class CloudAPI:
 
     def list_resources(self):
         if self.provider == "aws":
-            return "AWS API setup required"
+            if not AWS_CONFIG["ACCESS_KEY_ID"] or not AWS_CONFIG["SECRET_ACCESS_KEY"]:
+                return "AWS API keys missing or incomplete."
+            return f"AWS API setup complete for region {AWS_CONFIG['REGION']}"
 
         elif self.provider == "azure":
             missing_fields = [key for key, value in AZURE_CONFIG.items() if not value]
             if missing_fields:
-                missing_str = ", ".join(missing_fields)
-                return f"Azure configuration incomplete. Missing: {missing_str}"
+                return f"Azure configuration incomplete. Missing: {', '.join(missing_fields)}"
             return "Azure API setup required"
 
         elif self.provider == "gcp":
@@ -29,27 +42,15 @@ class CloudAPI:
         else:
             return "Invalid provider"
 
-
-# Example usage
-aws_api = CloudAPI("AWS")
-print(aws_api.list_resources())  # AWS API setup required
-
-azure_api = CloudAPI("azure")
-print(azure_api.list_resources())  # Azure API setup required or config error
-
-gcp_api = CloudAPI("gcp")
-print(gcp_api.list_resources())  # GCP API setup required
-
-
 def test_cloud_api():
     aws_api = CloudAPI("aws")
     azure_api = CloudAPI("azure")
     gcp_api = CloudAPI("gcp")
     invalid_api = CloudAPI("digitalocean")
 
-    assert aws_api.list_resources() == "AWS API setup required", "AWS check failed!"
+    aws_result = aws_api.list_resources()
+    assert ("AWS API setup complete" in aws_result) or ("AWS API keys missing" in aws_result), "AWS check failed!"
 
-    # For Azure, depends if your AZURE_CONFIG values are set or not
     if all(AZURE_CONFIG.values()):
         assert azure_api.list_resources() == "Azure API setup required", "Azure check (complete) failed!"
     else:
@@ -60,7 +61,5 @@ def test_cloud_api():
 
     print("✅ All tests passed!")
 
-
 if __name__ == "__main__":
     test_cloud_api()
-
