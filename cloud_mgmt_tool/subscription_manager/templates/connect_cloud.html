@@ -1,0 +1,43 @@
+<!-- templates/connect_cloud.html -->
+<h2>Connect Cloud Account</h2>
+
+<form method="POST" action="{% url 'connect_cloud' %}">
+  {% csrf_token %}
+
+  <label>Select Cloud Provider:</label>
+  <select name="provider" required>
+    <option value="aws">AWS</option>
+    <option value="gcp">GCP</option>
+    <option value="azure">Azure</option>
+  </select><br><br>
+
+  <!-- AWS fields -->
+  <label>AWS Access Key:</label>
+  <input type="text" name="aws_access_key"><br>
+
+  <label>AWS Secret Key:</label>
+  <input type="password" name="aws_secret_key"><br>
+
+  <label>IAM Role ARN:</label>
+  <input type="text" name="aws_iam_arn"><br>
+
+  <!-- GCP fields -->
+  <label>GCP Project ID:</label>
+  <input type="text" name="gcp_project_id"><br>
+
+  <label>GCP JSON Key:</label>
+  <input type="file" name="gcp_json_key"><br>
+
+  <!-- Azure fields -->
+  <label>Azure Subscription ID:</label>
+  <input type="text" name="azure_subscription_id"><br>
+
+  <label>Tenant ID:</label>
+  <input type="text" name="azure_tenant_id"><br><br>
+
+  <button type="submit">Connect Account</button>
+</form>
+
+{% if message %}
+  <p style="color: green;">{{ message }}</p>
+{% endif %}

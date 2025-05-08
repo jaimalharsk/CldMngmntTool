@@ -14,17 +14,41 @@
         </ul>
     </aside>
 
-    <!-- Sidebar Toggle Button -->
+    <!-- Toggle Button -->
     <button id="sidebarToggleBtn" onclick="toggleSidebar()" class="toggle-btn" title="Open Sidebar">☰</button>
 
     <!-- Main Content -->
     <main class="main-content">
         <h2>User Profile</h2>
-        <div class="profile-box">
-            <p><strong>Name:</strong> John Doe</p>
-            <p><strong>Email:</strong> john.doe@example.com</p>
-            <p><strong>Joined:</strong> 2023-07-14</p>
-            <p><strong>Role:</strong> Admin</p>
+        <div class="profile-container">
+            <div class="profile-card">
+                <div class="profile-top">
+                    <div class="avatar-box">
+                        <img src="https://ui-avatars.com/api/?name={{ request.user.get_full_name|default:'John+Doe' }}&background=00b894&color=fff&size=150" alt="Profile Picture">
+
+                    </div>
+                    <div class="user-details">
+                        <h3>{{ request.user.get_full_name|default:"John Doe" }}
+                            <span class="badge role">User</span>
+                        </h3>
+                        <p><strong>Email:</strong> {{ request.user.email }}</p>
+                        <p><strong>Username:</strong> {{ request.user.username }}</p>
+                        <p><strong>Status:</strong>
+                            <span class="badge active">
+                                {% if request.user.is_active %}Active{% else %}Inactive{% endif %}
+                            </span>
+                        </p>
+                        <p><strong>Joined:</strong> {{ request.user.date_joined|date:"Y-m-d H:i" }}</p>
+                        <p><strong>Last Login:</strong> {{ request.user.last_login|date:"Y-m-d H:i" }}</p>
+                        <p><strong>Subscription:</strong> Premium Plan</p>
+                    </div>
+                </div>
+
+                <div class="profile-actions">
+                    <button class="btn-edit">Edit Profile</button>
+                    <button class="btn-change-password">Change Password</button>
+                </div>
+            </div>
         </div>
     </main>
 </div>
@@ -35,8 +59,8 @@ body {
     font-family: 'Arial', sans-serif;
     background: linear-gradient(135deg, #00b894, #0984e3);
     color: #fff;
-    overflow: hidden;
     height: 98vh;
+    overflow: hidden;
 }
 
 .dashboard-wrapper {
@@ -46,7 +70,6 @@ body {
     position: relative;
 }
 
-/* Sidebar */
 .sidebar {
     background: #2d3436;
     width: 250px;
@@ -61,7 +84,6 @@ body {
     transform: translateX(-100%);
 }
 
-/* Sidebar Header */
 .sidebar-header {
     display: flex;
     justify-content: space-between;
@@ -92,7 +114,6 @@ body {
     font-size: 16px;
 }
 
-/* Toggle Button */
 .toggle-btn {
     position: absolute;
     top: 20px;
@@ -112,42 +133,118 @@ body {
     display: block;
 }
 
-/* Main Content */
 .main-content {
     flex-grow: 1;
     padding: 40px;
     background-color: rgba(255, 255, 255, 0.95);
     color: #2d3436;
     height: 100%;
-    width: 100%;
     overflow-y: auto;
 }
 
 h2 {
-    color: #2d3436;
-    margin-bottom: 20px;
+    margin-bottom: 25px;
+    font-size: 28px;
 }
 
-.profile-box {
+.profile-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 85%;
+}
+
+.profile-card {
+    width: 700px;
     background: #fff;
-    padding: 30px;
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    padding: 40px;
+    border-radius: 16px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
     color: #2d3436;
-    max-width: 500px;
-    margin: auto;
-    font-size: 16px;
+}
+
+.profile-top {
+    display: flex;
+    align-items: flex-start;
+    gap: 30px;
+}
+
+.avatar-box img {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    border: 4px solid #00b894;
+    object-fit: cover;
+}
+
+.user-details {
+    flex-grow: 1;
+}
+
+.user-details h3 {
+    font-size: 26px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+}
+
+.user-details p {
+    margin: 6px 0;
+    font-size: 15px;
+}
+
+.badge {
+    display: inline-block;
+    padding: 5px 12px;
+    font-size: 12px;
+    border-radius: 20px;
+    color: #fff;
+    margin-left: 10px;
+}
+
+.badge.role {
+    background-color: #6c5ce7;
+}
+
+.badge.active {
+    background-color: #00b894;
+}
+
+.profile-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+    margin-top: 30px;
+}
+
+.profile-actions button {
+    background-color: #0984e3;
+    color: white;
+    border: none;
+    padding: 10px 22px;
+    border-radius: 25px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.profile-actions button:hover {
+    background-color: #00b894;
+    transform: scale(1.05);
 }
 
 /* Responsive */
 @media screen and (max-width: 768px) {
-    .dashboard-wrapper {
+    .profile-top {
         flex-direction: column;
+        align-items: center;
     }
-
-    .toggle-btn {
-        top: 10px;
-        left: 10px;
+    .user-details {
+        text-align: center;
+    }
+    .profile-actions {
+        justify-content: center;
+        flex-wrap: wrap;
     }
 }
 </style>
@@ -155,7 +252,6 @@ h2 {
 <script>
 function toggleSidebar() {
     const sidebar = document.getElementById("sidebar");
-    const toggleBtn = document.getElementById("sidebarToggleBtn");
     sidebar.classList.toggle("collapsed");
 }
 </script>
