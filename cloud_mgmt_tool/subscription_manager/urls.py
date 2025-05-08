@@ -5,7 +5,6 @@ from django.contrib.auth import views as auth_views
 from .views import list_cloud_resources, create_subscription, login_redirect
 from django.views.generic import TemplateView
 
-
 urlpatterns = [
     # Include allauth.urls for Google OAuth
     path('accounts/', include('allauth.urls')),
@@ -18,9 +17,13 @@ urlpatterns = [
     path('subscriptions/', views.subscription_list, name='subscription_list'),
     path('registration/', views.register, name='register'),
     path('api/', include('subscription_manager.api_urls')),
+
     path('api/cloud/<str:provider>/', list_cloud_resources, name='list_cloud'),
     path('api/subscription/<str:provider>/<str:email>/', create_subscription, name='create_subscription'),
     path('api/login/<str:provider>/', login_redirect, name='login_redirect'),
     path('dashboard/', views.dashboard, name='dashboard'),  # ✅ Correct dashboard route
     path('google-popup/', TemplateView.as_view(template_name="accounts/google_popup.html"), name="google_popup"),
+    path('connect-cloud/', views.connect_cloud, name='connect_cloud'),
+    path('set-budget/', views.set_budget, name='set_budget'),  # ✅ Keep if separate page is needed
+    path('dashboard/', views.dashboard, name='dashboard'),
 ]
