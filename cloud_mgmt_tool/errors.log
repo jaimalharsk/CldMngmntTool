@@ -6633,3 +6633,399 @@ Traceback (most recent call last):
     raise TemplateDoesNotExist(template_name, chain=chain)
 django.template.exceptions.TemplateDoesNotExist: dashboard.html
 "GET /dashboard/ HTTP/1.1" 500 93314
+Internal Server Error: /set-budget/
+Traceback (most recent call last):
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\subscription_manager\views.py", line 277, in set_budget
+    Budget.objects.create(
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\venv\Lib\site-packages\django\db\models\manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\venv\Lib\site-packages\django\db\models\query.py", line 677, in create
+    obj = self.model(**kwargs)
+          ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\venv\Lib\site-packages\django\db\models\base.py", line 567, in __init__
+    raise TypeError(
+TypeError: Budget() got unexpected keyword arguments: 'provider', 'threshold'
+"POST /set-budget/ HTTP/1.1" 500 86656
+Internal Server Error: /dashboard/
+Traceback (most recent call last):
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\venv\Lib\site-packages\django\db\models\sql\query.py", line 2195, in add_fields
+    join_info = self.setup_joins(
+                ^^^^^^^^^^^^^^^^^
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\venv\Lib\site-packages\django\db\models\sql\query.py", line 1863, in setup_joins
+    path, final_field, targets, rest = self.names_to_path(
+                                       ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\venv\Lib\site-packages\django\db\models\sql\query.py", line 1768, in names_to_path
+    raise FieldError(
+django.core.exceptions.FieldError: Cannot resolve keyword 'monthly_budget' into field. Choices are: amount, created_at, id, user, user_id
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\venv\Lib\site-packages\django\contrib\auth\decorators.py", line 60, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\subscription_manager\views.py", line 91, in dashboard
+    budget_limit = sum(user_budgets.values_list('monthly_budget', flat=True))
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\venv\Lib\site-packages\django\db\models\query.py", line 1392, in values_list
+    clone = self._values(*_fields, **expressions)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\venv\Lib\site-packages\django\db\models\query.py", line 1355, in _values
+    clone.query.set_values(fields)
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\venv\Lib\site-packages\django\db\models\sql\query.py", line 2500, in set_values
+    self.add_fields(field_names, True)
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\venv\Lib\site-packages\django\db\models\sql\query.py", line 2223, in add_fields
+    raise FieldError(
+django.core.exceptions.FieldError: Cannot resolve keyword 'monthly_budget' into field. Choices are: amount, created_at, id, user, user_id
+"GET /dashboard/ HTTP/1.1" 500 112202
+Internal Server Error: /dashboard/
+Traceback (most recent call last):
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\venv\Lib\site-packages\django\db\models\sql\query.py", line 2195, in add_fields
+    join_info = self.setup_joins(
+                ^^^^^^^^^^^^^^^^^
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\venv\Lib\site-packages\django\db\models\sql\query.py", line 1863, in setup_joins
+    path, final_field, targets, rest = self.names_to_path(
+                                       ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\venv\Lib\site-packages\django\db\models\sql\query.py", line 1768, in names_to_path
+    raise FieldError(
+django.core.exceptions.FieldError: Cannot resolve keyword 'amount' into field. Choices are: created_at, id, monthly_budget, user, user_id
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\venv\Lib\site-packages\django\contrib\auth\decorators.py", line 60, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\subscription_manager\views.py", line 88, in dashboard
+    budget_limit = sum(user_budgets.values_list('amount', flat=True))
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\venv\Lib\site-packages\django\db\models\query.py", line 1392, in values_list
+    clone = self._values(*_fields, **expressions)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\venv\Lib\site-packages\django\db\models\query.py", line 1355, in _values
+    clone.query.set_values(fields)
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\venv\Lib\site-packages\django\db\models\sql\query.py", line 2500, in set_values
+    self.add_fields(field_names, True)
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\venv\Lib\site-packages\django\db\models\sql\query.py", line 2223, in add_fields
+    raise FieldError(
+django.core.exceptions.FieldError: Cannot resolve keyword 'amount' into field. Choices are: created_at, id, monthly_budget, user, user_id
+"GET /dashboard/ HTTP/1.1" 500 112370
+Internal Server Error: /dashboard/
+Traceback (most recent call last):
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\venv\Lib\site-packages\django\db\backends\utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\venv\Lib\site-packages\django\db\backends\sqlite3\base.py", line 354, in execute
+    return super().execute(query, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: no such column: subscription_manager_budget.monthly_budget
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\venv\Lib\site-packages\django\contrib\auth\decorators.py", line 60, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\subscription_manager\views.py", line 89, in dashboard
+    budget_limit = sum(user_budgets.values_list('monthly_budget', flat=True))  # updated
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\venv\Lib\site-packages\django\db\models\query.py", line 400, in __iter__
+    self._fetch_all()
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\venv\Lib\site-packages\django\db\models\query.py", line 1928, in _fetch_all
+    self._result_cache = list(self._iterable_class(self))
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\venv\Lib\site-packages\django\db\models\query.py", line 287, in __iter__
+    for row in compiler.results_iter(
+               ^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\venv\Lib\site-packages\django\db\models\sql\compiler.py", line 1525, in results_iter
+    results = self.execute_sql(
+              ^^^^^^^^^^^^^^^^^
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\venv\Lib\site-packages\django\db\models\sql\compiler.py", line 1574, in execute_sql
+    cursor.execute(sql, params)
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\venv\Lib\site-packages\django\db\backends\utils.py", line 122, in execute
+    return super().execute(sql, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\venv\Lib\site-packages\django\db\backends\utils.py", line 79, in execute
+    return self._execute_with_wrappers(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\venv\Lib\site-packages\django\db\backends\utils.py", line 92, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\venv\Lib\site-packages\django\db\backends\utils.py", line 100, in _execute
+    with self.db.wrap_database_errors:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\venv\Lib\site-packages\django\db\utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\venv\Lib\site-packages\django\db\backends\utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\venv\Lib\site-packages\django\db\backends\sqlite3\base.py", line 354, in execute
+    return super().execute(query, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+django.db.utils.OperationalError: no such column: subscription_manager_budget.monthly_budget
+"GET /dashboard/ HTTP/1.1" 500 142158
+Internal Server Error: /dashboard/
+Traceback (most recent call last):
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\venv\Lib\site-packages\django\db\backends\utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\venv\Lib\site-packages\django\db\backends\sqlite3\base.py", line 354, in execute
+    return super().execute(query, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: no such column: subscription_manager_budget.monthly_budget
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\venv\Lib\site-packages\django\contrib\auth\decorators.py", line 60, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\subscription_manager\views.py", line 89, in dashboard
+    budget_limit = sum(user_budgets.values_list('monthly_budget', flat=True))  # updated
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\venv\Lib\site-packages\django\db\models\query.py", line 400, in __iter__
+    self._fetch_all()
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\venv\Lib\site-packages\django\db\models\query.py", line 1928, in _fetch_all
+    self._result_cache = list(self._iterable_class(self))
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\venv\Lib\site-packages\django\db\models\query.py", line 287, in __iter__
+    for row in compiler.results_iter(
+               ^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\venv\Lib\site-packages\django\db\models\sql\compiler.py", line 1525, in results_iter
+    results = self.execute_sql(
+              ^^^^^^^^^^^^^^^^^
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\venv\Lib\site-packages\django\db\models\sql\compiler.py", line 1574, in execute_sql
+    cursor.execute(sql, params)
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\venv\Lib\site-packages\django\db\backends\utils.py", line 122, in execute
+    return super().execute(sql, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\venv\Lib\site-packages\django\db\backends\utils.py", line 79, in execute
+    return self._execute_with_wrappers(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\venv\Lib\site-packages\django\db\backends\utils.py", line 92, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\venv\Lib\site-packages\django\db\backends\utils.py", line 100, in _execute
+    with self.db.wrap_database_errors:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\venv\Lib\site-packages\django\db\utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\venv\Lib\site-packages\django\db\backends\utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\venv\Lib\site-packages\django\db\backends\sqlite3\base.py", line 354, in execute
+    return super().execute(query, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+django.db.utils.OperationalError: no such column: subscription_manager_budget.monthly_budget
+"GET /dashboard/ HTTP/1.1" 500 142172
+Internal Server Error: /dashboard/
+Traceback (most recent call last):
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\venv\Lib\site-packages\django\db\backends\utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\venv\Lib\site-packages\django\db\backends\sqlite3\base.py", line 354, in execute
+    return super().execute(query, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: no such column: subscription_manager_budget.monthly_budget
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\venv\Lib\site-packages\django\contrib\auth\decorators.py", line 60, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\subscription_manager\views.py", line 89, in dashboard
+    budget_limit = sum(user_budgets.values_list('monthly_budget', flat=True))  # updated
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\venv\Lib\site-packages\django\db\models\query.py", line 400, in __iter__
+    self._fetch_all()
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\venv\Lib\site-packages\django\db\models\query.py", line 1928, in _fetch_all
+    self._result_cache = list(self._iterable_class(self))
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\venv\Lib\site-packages\django\db\models\query.py", line 287, in __iter__
+    for row in compiler.results_iter(
+               ^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\venv\Lib\site-packages\django\db\models\sql\compiler.py", line 1525, in results_iter
+    results = self.execute_sql(
+              ^^^^^^^^^^^^^^^^^
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\venv\Lib\site-packages\django\db\models\sql\compiler.py", line 1574, in execute_sql
+    cursor.execute(sql, params)
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\venv\Lib\site-packages\django\db\backends\utils.py", line 122, in execute
+    return super().execute(sql, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\venv\Lib\site-packages\django\db\backends\utils.py", line 79, in execute
+    return self._execute_with_wrappers(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\venv\Lib\site-packages\django\db\backends\utils.py", line 92, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\venv\Lib\site-packages\django\db\backends\utils.py", line 100, in _execute
+    with self.db.wrap_database_errors:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\venv\Lib\site-packages\django\db\utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\venv\Lib\site-packages\django\db\backends\utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\venv\Lib\site-packages\django\db\backends\sqlite3\base.py", line 354, in execute
+    return super().execute(query, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+django.db.utils.OperationalError: no such column: subscription_manager_budget.monthly_budget
+"GET /dashboard/ HTTP/1.1" 500 142164
+Internal Server Error: /dashboard/
+Traceback (most recent call last):
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\venv\Lib\site-packages\django\db\backends\utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\venv\Lib\site-packages\django\db\backends\sqlite3\base.py", line 354, in execute
+    return super().execute(query, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: no such column: subscription_manager_budget.monthly_budget
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\venv\Lib\site-packages\django\contrib\auth\decorators.py", line 60, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\subscription_manager\views.py", line 89, in dashboard
+    budget_limit = sum(user_budgets.values_list('monthly_budget', flat=True))  # updated
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\venv\Lib\site-packages\django\db\models\query.py", line 400, in __iter__
+    self._fetch_all()
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\venv\Lib\site-packages\django\db\models\query.py", line 1928, in _fetch_all
+    self._result_cache = list(self._iterable_class(self))
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\venv\Lib\site-packages\django\db\models\query.py", line 287, in __iter__
+    for row in compiler.results_iter(
+               ^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\venv\Lib\site-packages\django\db\models\sql\compiler.py", line 1525, in results_iter
+    results = self.execute_sql(
+              ^^^^^^^^^^^^^^^^^
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\venv\Lib\site-packages\django\db\models\sql\compiler.py", line 1574, in execute_sql
+    cursor.execute(sql, params)
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\venv\Lib\site-packages\django\db\backends\utils.py", line 122, in execute
+    return super().execute(sql, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\venv\Lib\site-packages\django\db\backends\utils.py", line 79, in execute
+    return self._execute_with_wrappers(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\venv\Lib\site-packages\django\db\backends\utils.py", line 92, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\venv\Lib\site-packages\django\db\backends\utils.py", line 100, in _execute
+    with self.db.wrap_database_errors:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\venv\Lib\site-packages\django\db\utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\venv\Lib\site-packages\django\db\backends\utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\venv\Lib\site-packages\django\db\backends\sqlite3\base.py", line 354, in execute
+    return super().execute(query, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+django.db.utils.OperationalError: no such column: subscription_manager_budget.monthly_budget
+"GET /dashboard/ HTTP/1.1" 500 142021
+Internal Server Error: /dashboard/
+Traceback (most recent call last):
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\venv\Lib\site-packages\django\db\backends\utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\venv\Lib\site-packages\django\db\backends\sqlite3\base.py", line 354, in execute
+    return super().execute(query, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: no such column: subscription_manager_budget.monthly_budget
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\venv\Lib\site-packages\django\contrib\auth\decorators.py", line 60, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\subscription_manager\views.py", line 89, in dashboard
+    budget_limit = sum(user_budgets.values_list('monthly_budget', flat=True))  # updated
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\venv\Lib\site-packages\django\db\models\query.py", line 400, in __iter__
+    self._fetch_all()
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\venv\Lib\site-packages\django\db\models\query.py", line 1928, in _fetch_all
+    self._result_cache = list(self._iterable_class(self))
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\venv\Lib\site-packages\django\db\models\query.py", line 287, in __iter__
+    for row in compiler.results_iter(
+               ^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\venv\Lib\site-packages\django\db\models\sql\compiler.py", line 1525, in results_iter
+    results = self.execute_sql(
+              ^^^^^^^^^^^^^^^^^
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\venv\Lib\site-packages\django\db\models\sql\compiler.py", line 1574, in execute_sql
+    cursor.execute(sql, params)
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\venv\Lib\site-packages\django\db\backends\utils.py", line 122, in execute
+    return super().execute(sql, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\venv\Lib\site-packages\django\db\backends\utils.py", line 79, in execute
+    return self._execute_with_wrappers(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\venv\Lib\site-packages\django\db\backends\utils.py", line 92, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\venv\Lib\site-packages\django\db\backends\utils.py", line 100, in _execute
+    with self.db.wrap_database_errors:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\venv\Lib\site-packages\django\db\utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\venv\Lib\site-packages\django\db\backends\utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\venv\Lib\site-packages\django\db\backends\sqlite3\base.py", line 354, in execute
+    return super().execute(query, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+django.db.utils.OperationalError: no such column: subscription_manager_budget.monthly_budget
+"GET /dashboard/ HTTP/1.1" 500 142158
