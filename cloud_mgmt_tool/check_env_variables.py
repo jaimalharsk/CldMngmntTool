@@ -2,7 +2,7 @@ import os
 from dotenv import load_dotenv
 
 # Load your .env file
-dotenv_path = "keys.env"
+dotenv_path = ".env"
 load_dotenv(dotenv_path)
 
 # List of expected environment variable names

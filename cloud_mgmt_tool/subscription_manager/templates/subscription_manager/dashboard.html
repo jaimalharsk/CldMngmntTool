@@ -144,22 +144,24 @@
         <th>Cost ($)</th>
         <th>Status</th>
         <th>Budget ($)</th>
+        <th>Alert Threshold (%)</th>
       </tr>
     </thead>
     <tbody>
       {% for entry in services %}
         <tr>
-          <td>{{ entry.name }}</td>
+          <td>{{ entry.service_name }}</td>
           <td>{{ entry.usage_percent }}</td>
           <td>{{ entry.cost }}</td>
           <td>
-            {% if entry.usage_percent > entry.threshold %}
+            {% if entry.usage_percent > entry.alert_threshold %}
               <span class="badge bg-danger">Over Budget</span>
             {% else %}
               <span class="badge bg-success">OK</span>
             {% endif %}
           </td>
-          <td>{{ entry.budget }}</td>
+          <td>{{ entry.monthly_budget }}</td>
+          <td>{{ entry.alert_threshold }}</td>
         </tr>
       {% endfor %}
     </tbody>
@@ -216,7 +218,7 @@
         <div class="modal-body">
           <div class="mb-2">
             <label for="provider">Provider</label>
-            <select name="provider" class="form-select" required>
+            <select name="cloud_provider" class="form-select" required>
               <option value="aws">AWS</option>
               <option value="gcp">GCP</option>
               <option value="azure">Azure</option>
@@ -224,11 +226,11 @@
           </div>
           <div class="mb-2">
             <label for="budget">Monthly Budget ($)</label>
-            <input type="number" name="budget" class="form-control" required min="0" step="0.01">
+            <input type="number" name="monthly_budget" class="form-control" required min="0" step="0.01">
           </div>
           <div class="mb-2">
-            <label for="threshold">Alert Threshold (%)</label>
-            <input type="number" name="threshold" class="form-control" min="50" max="100" value="80">
+            <label for="alert_threshold">Alert Threshold (%)</label>
+            <input type="number" name="alert_threshold" class="form-control" min="1" max="100" value="80">
           </div>
         </div>
         <div class="modal-footer py-1">
