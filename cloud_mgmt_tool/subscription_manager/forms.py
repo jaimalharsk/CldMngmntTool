@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import get_user_model
-from .models import Budget,Subscription
+from .models import Budget,Subscription,CloudAccount
 
 # ✅ FIX: Define User early
 User = get_user_model()
@@ -32,3 +32,8 @@ class SubscriptionForm(forms.ModelForm):
             'status': forms.Select(attrs={'class': 'form-control'}),
             'frequency': forms.Select(attrs={'class': 'form-control'}),
         }
+
+class CloudAccountForm(forms.ModelForm):
+    class Meta:
+        model = CloudAccount
+        fields = ['provider', 'access_key', 'secret_key', 'role_arn', 'project_id', 'subscription_id', 'tenant_id']

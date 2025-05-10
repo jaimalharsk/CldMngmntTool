@@ -4,6 +4,8 @@ from django.http import JsonResponse, HttpResponse
 from django.contrib.auth.views import LoginView
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+import boto3
+from botocore.exceptions import ClientError, NoCredentialsError
 
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -172,21 +174,75 @@ def set_budget(request):
 
 
 # ========== Cloud Account ==========
-@login_required
 def connect_cloud(request):
     if request.method == 'POST':
         provider = request.POST.get('provider')
-        CloudAccount.objects.create(
-            user=request.user,
-            provider=provider,
-            access_key=request.POST.get('aws_access_key'),
-            secret_key=request.POST.get('aws_secret_key'),
-            role_arn=request.POST.get('aws_iam_arn'),
-            project_id=request.POST.get('gcp_project_id'),
-            subscription_id=request.POST.get('azure_subscription_id'),
-            tenant_id=request.POST.get('azure_tenant_id'),
-        )
-        return JsonResponse({"success": True})
+
+        # AWS specific validation
+        if provider == 'aws':
+            aws_access_key = request.POST.get('aws_access_key')
+            aws_secret_key = request.POST.get('aws_secret_key')
+            aws_iam_arn = request.POST.get('aws_iam_arn')
+
+            # Validate AWS credentials by trying to access AWS STS service
+            try:
+                sts_client = boto3.client(
+                    'sts',
+                    aws_access_key_id=aws_access_key,
+                    aws_secret_access_key=aws_secret_key
+                )
+                # Try to get the caller identity to validate the connection
+                sts_client.get_caller_identity()
+
+                # If successful, save the CloudAccount to DB
+                CloudAccount.objects.create(
+                    user=request.user,
+                    provider=provider,
+                    access_key=aws_access_key,
+                    secret_key=aws_secret_key,
+                    role_arn=aws_iam_arn,
+                )
+                return JsonResponse({"success": True, "message": "AWS account connected successfully!"})
+
+            except NoCredentialsError:
+                return JsonResponse({"success": False, "error": "AWS credentials are missing or invalid."})
+            except ClientError as e:
+                return JsonResponse({"success": False, "error": f"Failed to connect to AWS: {str(e)}"})
+
+        # Add future handling for GCP or Azure here (could be similar steps)
+        elif provider == 'gcp':
+            project_id = request.POST.get('gcp_project_id')
+            # Example validation for GCP (could add actual GCP SDK calls)
+            if project_id:
+                # Save to DB if successful
+                CloudAccount.objects.create(
+                    user=request.user,
+                    provider=provider,
+                    project_id=project_id
+                )
+                return JsonResponse({"success": True, "message": "GCP account connected successfully!"})
+            else:
+                return JsonResponse({"success": False, "error": "Invalid GCP project ID."})
+
+        elif provider == 'azure':
+            subscription_id = request.POST.get('azure_subscription_id')
+            tenant_id = request.POST.get('azure_tenant_id')
+            # Example validation for Azure (could add actual Azure SDK calls)
+            if subscription_id and tenant_id:
+                # Save to DB if successful
+                CloudAccount.objects.create(
+                    user=request.user,
+                    provider=provider,
+                    subscription_id=subscription_id,
+                    tenant_id=tenant_id
+                )
+                return JsonResponse({"success": True, "message": "Azure account connected successfully!"})
+            else:
+                return JsonResponse({"success": False, "error": "Invalid Azure credentials."})
+
+        else:
+            return JsonResponse({"success": False, "error": "Unsupported provider."})
+
     return JsonResponse({"success": False, "error": "Invalid request method."})
 
 

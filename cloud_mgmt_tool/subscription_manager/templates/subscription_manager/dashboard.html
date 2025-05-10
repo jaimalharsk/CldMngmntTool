@@ -182,20 +182,49 @@
         <div class="modal-body">
           <div class="mb-2">
             <label for="provider">Provider</label>
-            <select name="provider" class="form-select" required>
-              <option value="AWS">AWS</option>
-              <option value="Azure">Azure</option>
-              <option value="GCP">GCP</option>
+            <select name="provider" class="form-select" required id="providerSelect">
+              <option value="aws">AWS</option>
+              <option value="azure">Azure</option>
+              <option value="gcp">GCP</option>
             </select>
           </div>
-          <div class="mb-2">
-            <label for="api_key">API Key</label>
-            <input type="text" name="api_key" class="form-control" required>
+
+          <!-- AWS fields -->
+          <div id="awsFields" class="cloudFields">
+            <div class="mb-2">
+              <label for="aws_access_key">AWS Access Key</label>
+              <input type="text" name="aws_access_key" class="form-control" required>
+            </div>
+            <div class="mb-2">
+              <label for="aws_secret_key">AWS Secret Key</label>
+              <input type="password" name="aws_secret_key" class="form-control" required>
+            </div>
+            <div class="mb-2">
+              <label for="aws_iam_arn">IAM Role ARN</label>
+              <input type="text" name="aws_iam_arn" class="form-control">
+            </div>
           </div>
-          <div class="mb-2">
-            <label for="secret_key">Secret Key</label>
-            <input type="password" name="secret_key" class="form-control" required>
+
+          <!-- Azure fields -->
+          <div id="azureFields" class="cloudFields" style="display: none;">
+            <div class="mb-2">
+              <label for="azure_subscription_id">Azure Subscription ID</label>
+              <input type="text" name="azure_subscription_id" class="form-control" required>
+            </div>
+            <div class="mb-2">
+              <label for="azure_tenant_id">Azure Tenant ID</label>
+              <input type="text" name="azure_tenant_id" class="form-control" required>
+            </div>
           </div>
+
+          <!-- GCP fields -->
+          <div id="gcpFields" class="cloudFields" style="display: none;">
+            <div class="mb-2">
+              <label for="gcp_project_id">GCP Project ID</label>
+              <input type="text" name="gcp_project_id" class="form-control" required>
+            </div>
+          </div>
+
         </div>
         <div class="modal-footer py-1">
           <button type="submit" class="btn btn-primary btn-sm">Connect</button>
@@ -246,6 +275,30 @@
 
 <!-- Dashboard JS -->
 <script>
+   document.addEventListener('DOMContentLoaded', function () {
+    const providerSelect = document.getElementById('providerSelect');
+    const awsFields = document.getElementById('awsFields');
+    const azureFields = document.getElementById('azureFields');
+    const gcpFields = document.getElementById('gcpFields');
+
+    providerSelect.addEventListener('change', function () {
+      const selectedProvider = providerSelect.value;
+
+      // Hide all fields first
+      awsFields.style.display = 'none';
+      azureFields.style.display = 'none';
+      gcpFields.style.display = 'none';
+
+      // Show fields based on selected provider
+      if (selectedProvider === 'aws') {
+        awsFields.style.display = 'block';
+      } else if (selectedProvider === 'azure') {
+        azureFields.style.display = 'block';
+      } else if (selectedProvider === 'gcp') {
+        gcpFields.style.display = 'block';
+      }
+    });
+  });
 let resourceChart, billingChart;
 let currentType = { resource: 'line', billing: 'bar' };
 let isDarkMode = false;
