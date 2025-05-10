@@ -9,19 +9,16 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
 import csv
-from .forms import CustomUserCreationForm, BudgetForm
+from .forms import CustomUserCreationForm, BudgetForm, SubscriptionForm
 from .models import Subscription, CloudAccount, Budget
 from .serializers import SubscriptionSerializer
 from .cloud_api import CloudAPI
 from .payment_api import PaymentAPI
 from .auth_api import AuthAPI
 
-# Define the User model at the top
 User = get_user_model()
 
-# ===========================
-# User Registration
-# ===========================
+# ========== Registration ==========
 def register(request):
     if request.method == 'POST':
         form = CustomUserCreationForm(request.POST)
@@ -33,46 +30,48 @@ def register(request):
     return render(request, 'registration/register.html', {'form': form})
 
 
-# ===========================
-# Custom Login View
-# ===========================
+# ========== Custom Login ==========
 class AdminStyleLoginView(LoginView):
     template_name = 'admin/login.html'
 
 
-# ===========================
-# Home View
-# ===========================
+# ========== Home ==========
 def home(request):
     return render(request, 'home.html')
 
 
+# ========== Dashboard ==========
 @login_required
 def dashboard(request):
     budget_form = BudgetForm()
+    subscription_form = SubscriptionForm()
 
-    if request.method == 'POST' and 'set_budget' in request.POST:
-        budget_form = BudgetForm(request.POST)
-        if budget_form.is_valid():
-            cd = budget_form.cleaned_data
-            Budget.objects.create(
-                user=request.user,
-                cloud_provider=cd['cloud_provider'],
-                monthly_budget=cd['monthly_budget'],  # updated
-                service_name=cd.get('service_name'),
-                alert_threshold=cd['alert_threshold'],
-            )
-            messages.success(request, "Budget set successfully!")
-            return redirect('dashboard')
+    if request.method == 'POST':
+        if 'set_budget' in request.POST:
+            budget_form = BudgetForm(request.POST)
+            if budget_form.is_valid():
+                budget = budget_form.save(commit=False)
+                budget.user = request.user
+                budget.save()
+                messages.success(request, "Budget set successfully!")
+                return redirect('dashboard')
 
-    active_subs = Subscription.objects.filter(status='Active')
-    all_subs = Subscription.objects.all()
+        elif 'add_subscription' in request.POST:
+            subscription_form = SubscriptionForm(request.POST)
+            if subscription_form.is_valid():
+                subscription = subscription_form.save(commit=False)
+                subscription.user = request.user
+                subscription.save()
+                messages.success(request, "Subscription added!")
+                return redirect('dashboard')
+
     user_budgets = Budget.objects.filter(user=request.user)
+    user_subs = Subscription.objects.filter(user=request.user)
 
     services = []
-    for sub in active_subs:
+    for sub in user_subs.filter(status='Active'):
         matched_budget = user_budgets.filter(service_name=sub.service_name).first()
-        budget_amount = matched_budget.monthly_budget if matched_budget else 0  # updated
+        budget_amount = matched_budget.monthly_budget if matched_budget else 0
         threshold = matched_budget.alert_threshold if matched_budget else 80
         usage_percent = round((sub.price / budget_amount) * 100, 2) if budget_amount else 0
 
@@ -84,9 +83,9 @@ def dashboard(request):
             'budget': budget_amount,
         })
 
-    monthly_cost = sum(sub.price for sub in active_subs if sub.price)
-    pending_alerts = all_subs.filter(status='Pending').count()
-    budget_limit = sum(user_budgets.values_list('monthly_budget', flat=True))  # updated
+    monthly_cost = sum(sub.price for sub in user_subs if sub.price)
+    pending_alerts = user_subs.filter(status='Pending').count()
+    budget_limit = sum(user_budgets.values_list('monthly_budget', flat=True))
 
     usage_chart = {
         'type': 'line',
@@ -118,27 +117,26 @@ def dashboard(request):
     }
 
     return render(request, 'subscription_manager/dashboard.html', {
-        'active_subscriptions': active_subs,
-        'subscriptions': all_subs,
+        'active_subscriptions': user_subs.filter(status='Active'),
+        'subscriptions': user_subs,
         'monthly_cost': monthly_cost,
         'pending_alerts': pending_alerts,
         'budget_limit': budget_limit,
         'usage_chart': usage_chart,
         'billing_chart': billing_chart,
         'budget_form': budget_form,
+        'subscription_form': subscription_form,
         'budgets': user_budgets,
         'services': services,
     })
 
 
-# ===========================
-# Set Budget (Fallback POST endpoint)
-# ===========================
+# ========== Fallback Budget Endpoint ==========
 @login_required
 def set_budget(request):
     if request.method == "POST":
         provider = request.POST.get('provider')
-        monthly_budget = request.POST.get('budget')  # renamed variable
+        monthly_budget = request.POST.get('budget')
         alert_threshold = request.POST.get('threshold')
         user = request.user
 
@@ -163,8 +161,8 @@ def set_budget(request):
         Budget.objects.create(
             user=user,
             cloud_provider=provider,
-            monthly_budget=monthly_budget,  # updated field
-            alert_threshold=alert_threshold  # consistent naming
+            monthly_budget=monthly_budget,
+            alert_threshold=alert_threshold
         )
 
         messages.success(request, f"{provider.upper()} budget of ₹{monthly_budget} set with {alert_threshold}% threshold.")
@@ -173,9 +171,7 @@ def set_budget(request):
     return redirect('dashboard')
 
 
-# ===========================
-# Cloud Account Connection
-# ===========================
+# ========== Cloud Account ==========
 @login_required
 def connect_cloud(request):
     if request.method == 'POST':
@@ -194,17 +190,13 @@ def connect_cloud(request):
     return JsonResponse({"success": False, "error": "Invalid request method."})
 
 
-# ===========================
-# User Profile View
-# ===========================
+# ========== Profile ==========
 @login_required
 def user_profile(request):
     return render(request, 'subscription_manager/user_profile.html')
 
 
-# ===========================
-# Export User Data to CSV
-# ===========================
+# ========== Export to CSV ==========
 @login_required
 def export_user_data(request):
     user = request.user
@@ -225,17 +217,12 @@ def export_user_data(request):
     return response
 
 
-# ===========================
-# Subscription List (HTML)
-# ===========================
+# ========== Subscription List ==========
 def subscription_list(request):
     subscriptions = Subscription.objects.all()
     return render(request, 'subscriptions/subscription_list.html', {'subscriptions': subscriptions})
 
 
-# ===========================
-# Subscription List (API)
-# ===========================
 @api_view(['GET'])
 def subscription_list_api(request):
     subscriptions = Subscription.objects.all()
@@ -243,25 +230,19 @@ def subscription_list_api(request):
     return Response(serializer.data)
 
 
-# ===========================
-# Cloud API Integration
-# ===========================
+# ========== Cloud API Integration ==========
 def list_cloud_resources(request, provider):
     api = CloudAPI(provider)
     return JsonResponse({"message": api.list_resources()})
 
 
-# ===========================
-# Subscription Creation (Mocked)
-# ===========================
+# ========== Subscription Creation (Mocked) ==========
 def create_subscription(request, provider, email):
     payment_api = PaymentAPI(provider)
     return JsonResponse({"message": payment_api.create_subscription(email)})
 
 
-# ===========================
-# Auth Redirect (Mocked)
-# ===========================
+# ========== Auth Redirect (Mocked) ==========
 def login_redirect(request, provider):
     auth_api = AuthAPI(provider)
     return JsonResponse({"message": auth_api.login_url()})

@@ -14,13 +14,23 @@ class CustomUser(AbstractUser):
 
 # User Budget Record
 class Budget(models.Model):
+    PROVIDER_CHOICES = [
+        ('aws', 'Amazon Web Services'),
+        ('gcp', 'Google Cloud Platform'),
+        ('azure', 'Microsoft Azure'),
+        ('all', 'All Providers'),
+    ]
+
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    cloud_provider = models.CharField(
+        max_length=10, choices=PROVIDER_CHOICES, default='all'
+    )
     monthly_budget = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    alert_threshold = models.IntegerField(default=80)  # In percent
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.user.username} - ${self.monthly_budget}"
-
+        return f"{self.user.username} - {self.cloud_provider.upper()} - ${self.monthly_budget}"
 
 # Cloud Account Connection Info
 class CloudAccount(models.Model):
@@ -51,30 +61,35 @@ class CloudAccount(models.Model):
 
 
 # Budget Settings Per Cloud Provider
-class BudgetSetting(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    provider = models.CharField(max_length=10, choices=CloudAccount.PROVIDER_CHOICES, default='aws')
-    monthly_budget = models.FloatField(default=0.0)
-    alert_threshold = models.IntegerField(default=80)  # In percent
-    created_on = models.DateTimeField(auto_now_add=True)
+# class BudgetSetting(models.Model):
+#     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+#     provider = models.CharField(max_length=10, choices=CloudAccount.PROVIDER_CHOICES, default='aws')
+#     monthly_budget = models.FloatField(default=0.0)
+#     alert_threshold = models.IntegerField(default=80)  # In percent
+#     created_on = models.DateTimeField(auto_now_add=True)
+#
+#     def __str__(self):
+#         return f"{self.user.username} - {self.provider.upper()} Budget"
 
-    def __str__(self):
-        return f"{self.user.username} - {self.provider.upper()} Budget"
 
-
-# Subscriptions Tracker
+# Subscription Tracker (refactored)
 class Subscription(models.Model):
     FREQUENCY_CHOICES = [
         ('monthly', 'Monthly'),
         ('yearly', 'Yearly'),
     ]
 
+    STATUS_CHOICES = [
+        ('active', 'Active'),
+        ('inactive', 'Inactive'),
+    ]
+
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    name = models.CharField(max_length=100, default="")
-    cost = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    service_name = models.CharField(max_length=100, default="")
+    price = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     renewal_date = models.DateField()
-    status = models.CharField(max_length=20, default='active')  # active, inactive
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='active')
     frequency = models.CharField(max_length=20, choices=FREQUENCY_CHOICES, default='monthly')
 
     def __str__(self):
-        return f"{self.name} ({self.user.username})"
+        return f"{self.service_name} ({self.user.username})"
