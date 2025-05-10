@@ -13,24 +13,39 @@ class CustomUser(AbstractUser):
 
 
 # User Budget Record
+from django.db import models
+from django.conf import settings
+
 class Budget(models.Model):
     PROVIDER_CHOICES = [
         ('aws', 'Amazon Web Services'),
         ('gcp', 'Google Cloud Platform'),
         ('azure', 'Microsoft Azure'),
-        ('all', 'All Providers'),
+        ('all', 'All Providers'),  # Optional aggregate budget
     ]
 
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     cloud_provider = models.CharField(
-        max_length=10, choices=PROVIDER_CHOICES, default='all'
+        max_length=10,
+        choices=PROVIDER_CHOICES,
+        default='all',
+        help_text="Choose which cloud provider this budget applies to."
     )
-    monthly_budget = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
-    alert_threshold = models.IntegerField(default=80)  # In percent
+    monthly_budget = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        default=0.00,
+        help_text="Monthly budget limit in USD."
+    )
+    alert_threshold = models.PositiveIntegerField(
+        default=80,
+        help_text="Threshold percentage at which to alert the user."
+    )
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"{self.user.username} - {self.cloud_provider.upper()} - ${self.monthly_budget}"
+
 
 # Cloud Account Connection Info
 class CloudAccount(models.Model):
@@ -93,3 +108,11 @@ class Subscription(models.Model):
 
     def __str__(self):
         return f"{self.service_name} ({self.user.username})"
+
+class CloudAccountUsage(models.Model):
+    cloud_account = models.ForeignKey(CloudAccount, on_delete=models.CASCADE)
+    total_cost = models.FloatField(default=0.0)
+    created_on = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.cloud_account} - ${self.total_cost:.2f} on {self.created_on.date()}"

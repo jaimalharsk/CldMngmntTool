@@ -4,7 +4,8 @@ from django.contrib.auth import views as auth_views
 from django.views.generic import TemplateView
 
 from . import views
-from .views import list_cloud_resources, create_subscription, login_redirect
+from .views import list_cloud_resources, create_subscription, login_redirect,dashboard_ajax
+
 
 urlpatterns = [
     # Auth and Registration
@@ -16,6 +17,7 @@ urlpatterns = [
     # User pages
     path('', views.home, name='home'),
     path('dashboard/', views.dashboard, name='dashboard'),
+    path('dashboard/ajax/', dashboard_ajax, name='dashboard_ajax'),
     path('profile/', views.user_profile, name='user_profile'),
     path('export/', views.export_user_data, name='export_user_data'),
 
