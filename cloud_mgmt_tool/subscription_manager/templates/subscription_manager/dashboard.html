@@ -135,38 +135,49 @@
 
 <!-- Combined Table Card -->
 <div class="card mt-4 h-auto">
-  <h4>Cloud Services Overview</h4>
-  <table class="table table-bordered table-striped">
-    <thead class="table-dark">
-      <tr>
-        <th>Service Name</th>
-        <th>Usage (%)</th>
-        <th>Cost ($)</th>
-        <th>Status</th>
-        <th>Budget ($)</th>
-        <th>Alert Threshold (%)</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for entry in services %}
+  <h4 class="p-3">Cloud Services Overview</h4>
+  <div class="table-responsive">
+    <table id="cloudServicesTable" class="table table-bordered table-striped align-middle text-center">
+      <thead class="table-dark">
         <tr>
-          <td>{{ entry.service_name }}</td>
-          <td>{{ entry.usage_percent }}</td>
-          <td>{{ entry.cost }}</td>
-          <td>
-            {% if entry.usage_percent > entry.alert_threshold %}
-              <span class="badge bg-danger">Over Budget</span>
-            {% else %}
-              <span class="badge bg-success">OK</span>
-            {% endif %}
-          </td>
-          <td>{{ entry.monthly_budget }}</td>
-          <td>{{ entry.alert_threshold }}</td>
+          <th>Service Name</th>
+          <th>Usage (%)</th>
+          <th>Cost ($)</th>
+          <th>Status</th>
+          <th>Budget ($)</th>
+          <th>Alert Threshold (%)</th>
         </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+        {% for entry in services %}
+          <tr>
+            <td>{{ entry.name }}</td>
+            <td>
+              <div class="progress" style="height: 20px;">
+                <div class="progress-bar {% if entry.usage_percent > entry.threshold %}bg-danger{% else %}bg-success{% endif %}"
+                     role="progressbar"
+                     style="width: {{ entry.usage_percent }}%;">
+                  {{ entry.usage_percent }}%
+                </div>
+              </div>
+            </td>
+            <td>${{ entry.cost }}</td>
+            <td>
+              {% if entry.usage_percent > entry.threshold %}
+                <span class="badge bg-danger">Over Budget</span>
+              {% else %}
+                <span class="badge bg-success">OK</span>
+              {% endif %}
+            </td>
+            <td>${{ entry.budget }}</td>
+            <td>{{ entry.threshold }}%</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
 </div>
+
 
 
 <!-- Connect Cloud Modal -->
@@ -425,6 +436,125 @@ async function refreshCharts() {
 
 refreshCharts();
 setInterval(refreshCharts, 60000);
+  document.querySelector('#connectCloudForm').addEventListener('submit', function(event) {
+    event.preventDefault();  // Prevent the form from submitting the traditional way
+
+    fetch('/connect-cloud/', {
+        method: 'POST',
+        body: new FormData(this),  // Sends the form data
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert(data.message);  // Display success message
+        } else {
+            alert("Error: " + data.error);  // Display error message
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);  // Log any network errors
+    });
+});
+  function updateCloudUsageTable() {
+    fetch('/dashboard/ajax/')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const tableBody = document.querySelector('tbody');
+                tableBody.innerHTML = ''; // Clear current table content
+
+                data.cloud_data.forEach(data => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${data.account.provider}</td>
+                        <td>${data.usage.total_cost}</td>
+                        <td>${data.budget.monthly_budget}</td>
+                        <td>${data.usage.total_cost > data.budget.monthly_budget ?
+                            '<span class="badge badge-danger">Over Budget</span>' :
+                            '<span class="badge badge-success">Within Budget</span>'}
+                        </td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            } else {
+                alert('Error fetching data!');
+            }
+        })
+        .catch(error => console.error('Error fetching data:', error));
+}
+
+// Update every 60 seconds (60000 ms)
+setInterval(updateCloudUsageTable, 60000);
+
+// Initial update when the page loads
+updateCloudUsageTable();
+  document.addEventListener('DOMContentLoaded', function () {
+  const providerSelect = document.getElementById('providerSelect');
+  const awsFields = document.getElementById('awsFields');
+  const azureFields = document.getElementById('azureFields');
+  const gcpFields = document.getElementById('gcpFields');
+
+  providerSelect.addEventListener('change', function () {
+    const selectedProvider = providerSelect.value;
+    awsFields.style.display = 'none';
+    azureFields.style.display = 'none';
+    gcpFields.style.display = 'none';
+
+    if (selectedProvider === 'aws') awsFields.style.display = 'block';
+    else if (selectedProvider === 'azure') azureFields.style.display = 'block';
+    else if (selectedProvider === 'gcp') gcpFields.style.display = 'block';
+  });
+
+  document.querySelector('#connectCloudForm').addEventListener('submit', function (event) {
+    event.preventDefault();
+
+    fetch('/connect-cloud/', {
+      method: 'POST',
+      body: new FormData(this),
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        alert(data.message);
+      } else {
+        alert("Error: " + data.error);
+      }
+    })
+    .catch(error => console.error('Error:', error));
+  });
+
+  function updateCloudUsageTable() {
+    fetch('/dashboard/ajax/')
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          const tableBody = document.querySelector('#cloudServicesTable tbody');
+          tableBody.innerHTML = '';
+
+          data.cloud_data.forEach(item => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+              <td>${item.account.provider}</td>
+              <td>$${item.usage.total_cost.toFixed(2)}</td>
+              <td>$${item.budget.monthly_budget.toFixed(2)}</td>
+              <td>
+                ${item.usage.total_cost > item.budget.monthly_budget
+                  ? '<span class="badge badge-danger">Over Budget</span>'
+                  : '<span class="badge badge-success">Within Budget</span>'}
+              </td>
+            `;
+            tableBody.appendChild(row);
+          });
+        } else {
+          alert('Error fetching data!');
+        }
+      })
+      .catch(error => console.error('Error fetching data:', error));
+  }
+
+  updateCloudUsageTable();
+  setInterval(updateCloudUsageTable, 60000);
+});
 </script>
 </body>
 </html>

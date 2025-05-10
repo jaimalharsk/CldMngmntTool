@@ -12,7 +12,7 @@ from rest_framework.response import Response
 
 import csv
 from .forms import CustomUserCreationForm, BudgetForm, SubscriptionForm
-from .models import Subscription, CloudAccount, Budget
+from .models import Subscription, CloudAccount, Budget,CloudAccountUsage
 from .serializers import SubscriptionSerializer
 from .cloud_api import CloudAPI
 from .payment_api import PaymentAPI
@@ -45,6 +45,8 @@ def home(request):
 # ========== Dashboard ==========
 @login_required
 def dashboard(request):
+    target_user = User.objects.get(username='testuser')  # Fetch the 'testuser' explicitly
+
     budget_form = BudgetForm()
     subscription_form = SubscriptionForm()
 
@@ -53,7 +55,7 @@ def dashboard(request):
             budget_form = BudgetForm(request.POST)
             if budget_form.is_valid():
                 budget = budget_form.save(commit=False)
-                budget.user = request.user
+                budget.user = target_user  # Save for testuser
                 budget.save()
                 messages.success(request, "Budget set successfully!")
                 return redirect('dashboard')
@@ -62,17 +64,18 @@ def dashboard(request):
             subscription_form = SubscriptionForm(request.POST)
             if subscription_form.is_valid():
                 subscription = subscription_form.save(commit=False)
-                subscription.user = request.user
+                subscription.user = target_user  # Save for testuser
                 subscription.save()
                 messages.success(request, "Subscription added!")
                 return redirect('dashboard')
 
-    user_budgets = Budget.objects.filter(user=request.user)
-    user_subs = Subscription.objects.filter(user=request.user)
+    # Fetch budgets and subscriptions for 'testuser'
+    user_budgets = Budget.objects.filter(user=target_user)
+    user_subs = Subscription.objects.filter(user=target_user)
 
     services = []
     for sub in user_subs.filter(status='Active'):
-        matched_budget = user_budgets.filter(service_name=sub.service_name).first()
+        matched_budget = user_budgets.filter(cloud_provider=sub.provider).first()
         budget_amount = matched_budget.monthly_budget if matched_budget else 0
         threshold = matched_budget.alert_threshold if matched_budget else 80
         usage_percent = round((sub.price / budget_amount) * 100, 2) if budget_amount else 0
@@ -302,3 +305,20 @@ def create_subscription(request, provider, email):
 def login_redirect(request, provider):
     auth_api = AuthAPI(provider)
     return JsonResponse({"message": auth_api.login_url()})
+
+def dashboard_ajax(request):
+    cloud_accounts = CloudAccount.objects.filter(user=request.user)
+    usage_data = CloudAccountUsage.objects.filter(cloud_account__in=cloud_accounts).order_by('-created_on')
+    budgets = Budget.objects.filter(user=request.user)
+
+    cloud_data = []
+    for account in cloud_accounts:
+        usage = usage_data.filter(cloud_account=account).first()
+        budget = budgets.filter(provider=account.provider).first()
+        cloud_data.append({
+            'account': {'provider': account.provider},
+            'usage': {'total_cost': usage.total_cost},
+            'budget': {'monthly_budget': budget.monthly_budget},
+        })
+
+    return JsonResponse({'success': True, 'cloud_data': cloud_data})
