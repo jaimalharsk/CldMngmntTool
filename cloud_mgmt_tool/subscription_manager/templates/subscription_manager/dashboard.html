@@ -149,6 +149,7 @@
         </tr>
       </thead>
       <tbody>
+      {% if services %}
         {% for entry in services %}
           <tr>
             <td>{{ entry.name }}</td>
@@ -173,6 +174,9 @@
             <td>{{ entry.threshold }}%</td>
           </tr>
         {% endfor %}
+      {% else %}
+       <tr><td colspan="6">No services available</td></tr>
+        {% endif %}
       </tbody>
     </table>
   </div>

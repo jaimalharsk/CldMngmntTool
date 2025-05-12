@@ -7189,3 +7189,19 @@ Traceback (most recent call last):
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 django.db.utils.OperationalError: no such column: subscription_manager_subscription.service_name
 "GET /dashboard/ HTTP/1.1" 500 142957
+Internal Server Error: /dashboard/
+Traceback (most recent call last):
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\venv\Lib\site-packages\django\contrib\auth\decorators.py", line 60, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\subscription_manager\views.py", line 82, in dashboard
+    budget = budget_map.get(sub.cloud_provider) or budget_map.get('all')  # Fallback to default budget ('all')
+                            ^^^^^^^^^^^^^^^^^^
+AttributeError: 'Subscription' object has no attribute 'cloud_provider'
+"GET /dashboard/ HTTP/1.1" 500 75947
