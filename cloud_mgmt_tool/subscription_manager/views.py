@@ -45,7 +45,7 @@ def home(request):
 # ========== Dashboard ==========
 @login_required
 def dashboard(request):
-    target_user = User.objects.get(username='testuser')  # Fetch the 'testuser' explicitly
+    target_user = request.user  # ✅ Use the actual logged-in user
 
     budget_form = BudgetForm()
     subscription_form = SubscriptionForm()
@@ -55,7 +55,7 @@ def dashboard(request):
             budget_form = BudgetForm(request.POST)
             if budget_form.is_valid():
                 budget = budget_form.save(commit=False)
-                budget.user = target_user  # Save for testuser
+                budget.user = target_user
                 budget.save()
                 messages.success(request, "Budget set successfully!")
                 return redirect('dashboard')
@@ -64,30 +64,38 @@ def dashboard(request):
             subscription_form = SubscriptionForm(request.POST)
             if subscription_form.is_valid():
                 subscription = subscription_form.save(commit=False)
-                subscription.user = target_user  # Save for testuser
+                subscription.user = target_user
                 subscription.save()
                 messages.success(request, "Subscription added!")
                 return redirect('dashboard')
 
-    # Fetch budgets and subscriptions for 'testuser'
+    # Fetch budgets and subscriptions for the logged-in user
     user_budgets = Budget.objects.filter(user=target_user)
     user_subs = Subscription.objects.filter(user=target_user)
 
+    # Build lookup maps for budgets to avoid N+1 queries
+    budget_map = {budget.cloud_provider.lower(): budget for budget in user_budgets}
+
     services = []
-    for sub in user_subs.filter(status='Active'):
-        matched_budget = user_budgets.filter(cloud_provider=sub.provider).first()
-        budget_amount = matched_budget.monthly_budget if matched_budget else 0
-        threshold = matched_budget.alert_threshold if matched_budget else 80
+    for sub in user_subs.filter(status='active'):
+        # Fetch the specific budget for each subscription
+        budget = budget_map.get(sub.service_name.lower()) or budget_map.get('all')  # Fallback to default budget ('all')
+
+        budget_amount = budget.monthly_budget if budget else 0
+        threshold = budget.alert_threshold if budget else 80
+
+        # Calculate usage percentage
         usage_percent = round((sub.price / budget_amount) * 100, 2) if budget_amount else 0
 
         services.append({
             'name': sub.service_name,
-            'usage_percent': usage_percent,
             'cost': sub.price,
-            'threshold': threshold,
             'budget': budget_amount,
+            'threshold': threshold,
+            'usage_percent': usage_percent,
         })
 
+    # Additional data for charts and summaries
     monthly_cost = sum(sub.price for sub in user_subs if sub.price)
     pending_alerts = user_subs.filter(status='Pending').count()
     budget_limit = sum(user_budgets.values_list('monthly_budget', flat=True))
@@ -120,7 +128,7 @@ def dashboard(request):
             }]
         }
     }
-
+    print(services)
     return render(request, 'subscription_manager/dashboard.html', {
         'active_subscriptions': user_subs.filter(status='Active'),
         'subscriptions': user_subs,
@@ -134,6 +142,8 @@ def dashboard(request):
         'budgets': user_budgets,
         'services': services,
     })
+
+
 
 
 # ========== Fallback Budget Endpoint ==========
@@ -311,14 +321,23 @@ def dashboard_ajax(request):
     usage_data = CloudAccountUsage.objects.filter(cloud_account__in=cloud_accounts).order_by('-created_on')
     budgets = Budget.objects.filter(user=request.user)
 
+    # Build lookup maps to avoid N+1 queries
+    usage_map = {}
+    for usage in usage_data:
+        if usage.cloud_account_id not in usage_map:
+            usage_map[usage.cloud_account_id] = usage  # use the latest one only
+
+    budget_map = {budget.cloud_provider: budget for budget in budgets}
+
     cloud_data = []
     for account in cloud_accounts:
-        usage = usage_data.filter(cloud_account=account).first()
-        budget = budgets.filter(provider=account.provider).first()
+        usage = usage_map.get(account.id)
+        budget = budget_map.get(account.provider)
+
         cloud_data.append({
             'account': {'provider': account.provider},
-            'usage': {'total_cost': usage.total_cost},
-            'budget': {'monthly_budget': budget.monthly_budget},
+            'usage': {'total_cost': usage.total_cost if usage else 0},
+            'budget': {'monthly_budget': budget.monthly_budget if budget else 0},
         })
 
     return JsonResponse({'success': True, 'cloud_data': cloud_data})

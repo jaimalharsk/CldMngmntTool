@@ -106,6 +106,7 @@ class Subscription(models.Model):
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='active')
     frequency = models.CharField(max_length=20, choices=FREQUENCY_CHOICES, default='monthly')
 
+
     def __str__(self):
         return f"{self.service_name} ({self.user.username})"
 
