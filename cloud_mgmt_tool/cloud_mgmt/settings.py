@@ -42,7 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'subscription_manager',
+    'cloud_mgmt_tool.subscription_manager',
     'django_extensions',
     'rest_framework',
     'django.contrib.sites',
