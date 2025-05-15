@@ -7205,3 +7205,51 @@ Traceback (most recent call last):
                             ^^^^^^^^^^^^^^^^^^
 AttributeError: 'Subscription' object has no attribute 'cloud_provider'
 "GET /dashboard/ HTTP/1.1" 500 75947
+Internal Server Error: /export/
+Traceback (most recent call last):
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\venv\Lib\site-packages\django\contrib\auth\decorators.py", line 60, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\subscription_manager\views.py", line 292, in export_user_data
+    sub.provider,
+    ^^^^^^^^^^^^
+AttributeError: 'Subscription' object has no attribute 'provider'
+"GET /export/ HTTP/1.1" 500 75119
+Internal Server Error: /export/
+Traceback (most recent call last):
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\venv\Lib\site-packages\django\contrib\auth\decorators.py", line 60, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\subscription_manager\views.py", line 294, in export_user_data
+    sub.Budget,
+    ^^^^^^^^^^
+AttributeError: 'Subscription' object has no attribute 'Budget'
+"GET /export/ HTTP/1.1" 500 75002
+Internal Server Error: /export/
+Traceback (most recent call last):
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\venv\Lib\site-packages\django\contrib\auth\decorators.py", line 60, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Admin\PycharmProjects\Cloud Project CWIT\cloud_mgmt_tool\subscription_manager\views.py", line 294, in export_user_data
+    sub.Budget,
+    ^^^^^^^^^^
+AttributeError: 'Subscription' object has no attribute 'Budget'
+"GET /export/ HTTP/1.1" 500 75002

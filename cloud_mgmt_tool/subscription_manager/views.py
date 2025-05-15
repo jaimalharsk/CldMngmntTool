@@ -265,7 +265,6 @@ def user_profile(request):
     return render(request, 'subscription_manager/user_profile.html')
 
 
-# ========== Export to CSV ==========
 @login_required
 def export_user_data(request):
     user = request.user
@@ -275,13 +274,24 @@ def export_user_data(request):
     response['Content-Disposition'] = f'attachment; filename="{user.username}_data.csv"'
 
     writer = csv.writer(response)
+
+    # Basic user info
+    writer.writerow(["User Information"])
     writer.writerow(["Username", "Email", "Last Login"])
     writer.writerow([user.username, user.email, user.last_login])
 
-    writer.writerow([])
-    writer.writerow(["Subscription Name", "Status", "Cost"])
+    writer.writerow([])  # Blank line
+
+    # Subscription table
+    writer.writerow(["Subscription Details"])
+    writer.writerow(["Service Name", "Status", "Price"])
+
     for sub in subscriptions:
-        writer.writerow([sub.service_name, sub.status, sub.price])
+        writer.writerow([
+            sub.service_name,
+            sub.status,
+            sub.price,
+        ])
 
     return response
 
