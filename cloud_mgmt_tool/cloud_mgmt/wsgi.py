@@ -8,9 +8,12 @@ https://docs.djangoproject.com/en/5.1/howto/deployment/wsgi/
 """
 
 import os
-
 from django.core.wsgi import get_wsgi_application
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'cloud_mgmt.settings')
+# point at the real location of your settings.py:
+os.environ.setdefault(
+    'DJANGO_SETTINGS_MODULE',
+    'cloud_mgmt_tool.cloud_mgmt.settings'
+)
 
 application = get_wsgi_application()
