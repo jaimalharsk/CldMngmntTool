@@ -133,7 +133,7 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-AUTH_USER_MODEL = 'cloud_mgmt_tool.subscription_manager.CustomUser'
+AUTH_USER_MODEL = 'subscription_manager.CustomUser'
 
 
 # Password validation
