@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.urls import path, include
-from subscription_manager.views import AdminStyleLoginView  # ✅ Correct import
-from subscription_manager.auth_views import register  # ✅ Custom registration view
+from cloud_mgmt_tool.subscription_manager.views import AdminStyleLoginView  # ✅ Correct import
+from cloud_mgmt_tool.subscription_manager.auth_views import register  # ✅ Custom registration view
 
 urlpatterns = [
     path('admin/', admin.site.urls),  # Admin panel

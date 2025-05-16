@@ -98,7 +98,9 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'cloud_mgmt.urls'
+ROOT_URLCONF = 'cloud_mgmt_tool.cloud_mgmt.urls'
+WSGI_APPLICATION = 'cloud_mgmt_tool.cloud_mgmt.wsgi.application'
+
 
 TEMPLATES = [
     {
@@ -120,7 +122,6 @@ TEMPLATES = [
 ]
 
 
-WSGI_APPLICATION = 'cloud_mgmt.wsgi.application'
 
 
 # Database
@@ -132,7 +133,7 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-AUTH_USER_MODEL = 'subscription_manager.CustomUser'
+AUTH_USER_MODEL = 'cloud_mgmt_tool.subscription_manager.CustomUser'
 
 
 # Password validation
