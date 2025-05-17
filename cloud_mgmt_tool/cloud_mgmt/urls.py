@@ -8,7 +8,7 @@ urlpatterns = [
     path('accounts/', include('django.contrib.auth.urls')),  # Django built-in auth views (login, logout, etc.)
     path('accounts/register/', register, name='register'),  # Custom user registration
     path('accounts/login/', AdminStyleLoginView.as_view(), name='login'),  # Login page
-    path('', include('subscription_manager.urls')),  # Include app-specific URLs
+    path('', include('cloud_mgmt_tool.subscription_manager.urls')),  # Include app-specific URLs
 ]
 
 
