@@ -29,7 +29,7 @@ urlpatterns = [
     path('subscriptions/', views.subscription_list, name='subscription_list'),
 
     # APIs
-    path('api/', include('subscription_manager.api_urls')),
+    path('api/', include('cloud_mgmt_tool.subscription_manager.api_urls')),
     path('api/cloud/<str:provider>/', list_cloud_resources, name='list_cloud'),
     path('api/subscription/<str:provider>/<str:email>/', create_subscription, name='create_subscription'),
     path('api/login/<str:provider>/', login_redirect, name='login_redirect'),
