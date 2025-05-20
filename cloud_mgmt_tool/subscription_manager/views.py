@@ -6,10 +6,14 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 import boto3
 from botocore.exceptions import ClientError, NoCredentialsError
-
+import os
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-
+from openpyxl import Workbook
+from openpyxl.drawing.image import Image as ExcelImage
+from openpyxl.utils import get_column_letter
+from PIL import Image as PILImage
+from io import BytesIO
 import csv
 from .forms import CustomUserCreationForm, BudgetForm, SubscriptionForm
 from .models import Subscription, CloudAccount, Budget,CloudAccountUsage
@@ -266,35 +270,82 @@ def user_profile(request):
 
 
 @login_required
-def export_user_data(request):
+def export_user_data_xlsx(request):
     user = request.user
     subscriptions = Subscription.objects.filter(user=user)
 
-    response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = f'attachment; filename="{user.username}_data.csv"'
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "User Report"
 
-    writer = csv.writer(response)
+    # --- USER INFO ---
+    ws.append(["User Information"])
+    ws.append(["Username", "Email", "Last Login"])
+    ws.append([user.username, user.email, str(user.last_login)])
+    ws.append([])
 
-    # Basic user info
-    writer.writerow(["User Information"])
-    writer.writerow(["Username", "Email", "Last Login"])
-    writer.writerow([user.username, user.email, user.last_login])
+    # --- SUBSCRIPTION DATA TABLE ---
+    ws.append(["Subscription Report"])
+    ws.append([
+        "Service Name", "Usage (units)", "Budget (units)",
+        "Usage % of Budget", "Cost", "Cost per Unit"
+    ])
 
-    writer.writerow([])  # Blank line
+    row_start = ws.max_row + 1
 
-    # Subscription table
-    writer.writerow(["Subscription Details"])
-    writer.writerow(["Service Name", "Status", "Price"])
+    for index, sub in enumerate(subscriptions, start=row_start):
+        # Fallbacks
+        usage = sub.usage if hasattr(sub, 'usage') and sub.usage else 0
+        budget = sub.budget if hasattr(sub, 'budget') and sub.budget else 1  # Avoid division by 0
+        cost = float(sub.price) if sub.price else 0
 
-    for sub in subscriptions:
-        writer.writerow([
+        usage_percent = round((usage / budget) * 100, 2)
+        cost_per_unit = round((cost / usage), 2) if usage else 0
+
+        ws.append([
             sub.service_name,
-            sub.status,
-            sub.price,
+            usage,
+            budget,
+            f"{usage_percent}%",
+            cost,
+            cost_per_unit,
+            ""
         ])
 
-    return response
+        # Add logo image if available
+        if hasattr(sub, 'logo') and sub.logo and sub.logo.path:
+            try:
+                pil_img = PILImage.open(sub.logo.path)
+                pil_img.thumbnail((80, 80))
+                img_buffer = BytesIO()
+                pil_img.save(img_buffer, format='PNG')
+                img_buffer.seek(0)
 
+                img = ExcelImage(img_buffer)
+                img_cell = f"G{index}"
+                ws.add_image(img, img_cell)
+                ws.row_dimensions[index].height = 60
+
+            except Exception as e:
+                print(f"Error adding image for {sub.service_name}: {e}")
+
+    # --- SCREENSHOT SHEET ---
+    screenshot_path = f"media/screenshots/dashboard_{user.username}.png"
+    if os.path.exists(screenshot_path):
+        try:
+            screenshot_img = ExcelImage(screenshot_path)
+            ws_ss = wb.create_sheet("Dashboard Screenshot")
+            ws_ss.add_image(screenshot_img, "A1")
+        except Exception as e:
+            print(f"Error adding screenshot: {e}")
+
+    # --- RETURN XLSX FILE ---
+    response = HttpResponse(
+        content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    )
+    response['Content-Disposition'] = f'attachment; filename="{user.username}_cloud_report.xlsx"'
+    wb.save(response)
+    return response
 
 # ========== Subscription List ==========
 def subscription_list(request):

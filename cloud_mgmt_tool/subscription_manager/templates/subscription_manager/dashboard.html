@@ -85,7 +85,7 @@
     <a href="{% url 'user_profile' %}">View Profile</a>
     <a href="#" data-bs-toggle="modal" data-bs-target="#connectCloudModal">Connect Cloud Account</a>
     <a href="#" data-bs-toggle="modal" data-bs-target="#setBudgetModal">Set Budget</a>
-    <a href="{% url 'export_user_data' %}">Export Data</a>
+    <a href="{% url 'export_user_data_xlsx' %}" class="nav-link">Export Excel 📊</a>
     <a href="{% url 'logout' %}">Logout</a>
   </div>
 
@@ -99,8 +99,6 @@
       <div class="d-flex flex-wrap gap-2">
         <button onclick="refreshCharts()" class="btn btn-primary">Refresh Charts</button>
         <button onclick="toggleChartTypes()" class="btn btn-secondary">Toggle Chart Type</button>
-        <button onclick="printChart('resourceUsageChart')" class="btn btn-outline-success">Print Resource Chart</button>
-        <button onclick="printChart('billingChart')" class="btn btn-outline-info">Print Billing Chart</button>
       </div>
       <button onclick="toggleDarkMode()" class="btn btn-outline-dark">
         <i id="modeIcon" class="bi bi-moon-fill"></i>
@@ -195,6 +193,13 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
+          <!-- Feedback -->
+          {% if messages %}
+            {% for message in messages %}
+              <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+          {% endif %}
+
           <div class="mb-2">
             <label for="provider">Provider</label>
             <select name="provider" class="form-select" required id="providerSelect">
@@ -208,15 +213,24 @@
           <div id="awsFields" class="cloudFields">
             <div class="mb-2">
               <label for="aws_access_key">AWS Access Key</label>
-              <input type="text" name="aws_access_key" class="form-control" required>
+              <input type="text" name="aws_access_key" class="form-control">
             </div>
             <div class="mb-2">
               <label for="aws_secret_key">AWS Secret Key</label>
-              <input type="password" name="aws_secret_key" class="form-control" required>
+              <input type="password" name="aws_secret_key" class="form-control">
             </div>
             <div class="mb-2">
               <label for="aws_iam_arn">IAM Role ARN</label>
               <input type="text" name="aws_iam_arn" class="form-control">
+            </div>
+            <div class="mb-2">
+              <label for="aws_region">Region</label>
+              <select name="aws_region" class="form-select">
+                <option value="us-east-1">US East (N. Virginia)</option>
+                <option value="us-west-2">US West (Oregon)</option>
+                <option value="eu-west-1">EU (Ireland)</option>
+                <!-- Add more as needed -->
+              </select>
             </div>
           </div>
 
@@ -224,11 +238,11 @@
           <div id="azureFields" class="cloudFields" style="display: none;">
             <div class="mb-2">
               <label for="azure_subscription_id">Azure Subscription ID</label>
-              <input type="text" name="azure_subscription_id" class="form-control" required>
+              <input type="text" name="azure_subscription_id" class="form-control">
             </div>
             <div class="mb-2">
               <label for="azure_tenant_id">Azure Tenant ID</label>
-              <input type="text" name="azure_tenant_id" class="form-control" required>
+              <input type="text" name="azure_tenant_id" class="form-control">
             </div>
           </div>
 
@@ -236,7 +250,7 @@
           <div id="gcpFields" class="cloudFields" style="display: none;">
             <div class="mb-2">
               <label for="gcp_project_id">GCP Project ID</label>
-              <input type="text" name="gcp_project_id" class="form-control" required>
+              <input type="text" name="gcp_project_id" class="form-control">
             </div>
           </div>
 
@@ -248,7 +262,6 @@
     </div>
   </div>
 </div>
-
 <!-- Set Budget Modal -->
 <div class="modal fade" id="setBudgetModal" tabindex="-1" aria-labelledby="setBudgetModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-sm modal-dialog-centered">
