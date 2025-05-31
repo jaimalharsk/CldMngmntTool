@@ -23,13 +23,13 @@ urlpatterns = [
 
     # Cloud and Budget Actions
     path('connect-cloud/', views.connect_cloud, name='connect_cloud'),
-    path('set-budget/', views.set_budget, name='set_budget'),
+    #path('set-budget/', views.set_budget, name='set_budget'),
 
     # Subscriptions
-    path('subscriptions/', views.subscription_list, name='subscription_list'),
+    #path('subscriptions/', views.subscription_list, name='subscription_list'),
 
     # APIs
-    path('api/', include('cloud_mgmt_tool.subscription_manager.api_urls')),
+    #path('api/', include('cloud_mgmt_tool.subscription_manager.api_urls')),
     path('api/cloud/<str:provider>/', list_cloud_resources, name='list_cloud'),
     path('api/subscription/<str:provider>/<str:email>/', create_subscription, name='create_subscription'),
     path('api/login/<str:provider>/', login_redirect, name='login_redirect'),
@@ -38,5 +38,5 @@ urlpatterns = [
     path('google-popup/', TemplateView.as_view(template_name="accounts/google_popup.html"), name="google_popup"),
 
     # Admin
-    path('admin/', admin.site.urls),
+    #path('admin/', admin.site.urls),
 ]

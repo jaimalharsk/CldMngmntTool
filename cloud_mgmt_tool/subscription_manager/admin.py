@@ -1,8 +1,8 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from .models import CustomUser, CloudAccount,Subscription,Budget
+from .models import CustomUser, CloudAccount, CloudServiceSubscription, CloudAccountUsage
 
-# Custom User Admin
+# --- Custom User Admin ---
 class CustomUserAdmin(UserAdmin):
     model = CustomUser
     list_display = ('username', 'email', 'company_name', 'subscription_plan', 'is_staff', 'is_active')
@@ -13,32 +13,29 @@ class CustomUserAdmin(UserAdmin):
         ('Company Info', {'fields': ('company_name', 'subscription_plan')}),
     )
 
-# Cloud Account Admin
+# --- Cloud Account Admin ---
 class CloudAccountAdmin(admin.ModelAdmin):
     list_display = ('user', 'provider', 'connected_on')
     search_fields = ('user__username', 'provider')
     list_filter = ('provider',)
 
-# Budget Setting Admin
-# class BudgetSettingAdmin(admin.ModelAdmin):
-#     list_display = ('user', 'provider', 'monthly_budget', 'alert_threshold', 'created_on')
-#     list_filter = ('provider', 'created_on')
-#     search_fields = ('user__username',)
+# --- Cloud Service Subscription Admin (Unified Model) ---
+class CloudServiceSubscriptionAdmin(admin.ModelAdmin):
+    list_display = (
+        'user', 'cloud_provider', 'service_name', 'price', 'renewal_date',
+        'status', 'frequency', 'monthly_budget', 'alert_threshold', 'created_at'
+    )
+    list_filter = ('cloud_provider', 'status', 'frequency', 'created_at')
+    search_fields = ('user__username', 'service_name')
 
-# Subscription Admin
-class SubscriptionAdmin(admin.ModelAdmin):
-    list_display = ('user', 'service_name', 'price', 'renewal_date', 'status', 'frequency')  # changed 'cost' → 'price'
-    list_filter = ('status', 'frequency', 'renewal_date')
-    search_fields = ('user__username', 'name')
+# --- Cloud Usage Admin ---
+class CloudAccountUsageAdmin(admin.ModelAdmin):
+    list_display = ('cloud_account', 'total_cost', 'created_on')
+    list_filter = ('cloud_account__provider', 'created_on')
+    search_fields = ('cloud_account__user__username',)
 
-class BudgetAdmin(admin.ModelAdmin):
-    list_display = ('user', 'cloud_provider', 'monthly_budget', 'alert_threshold', 'created_at')
-    list_filter = ('cloud_provider',)
-    search_fields = ('user__username',)
-
-# Register models with admin site
+# --- Register Models ---
 admin.site.register(CustomUser, CustomUserAdmin)
 admin.site.register(CloudAccount, CloudAccountAdmin)
-#admin.site.register(BudgetSetting, BudgetSettingAdmin)
-admin.site.register(Subscription, SubscriptionAdmin)
-admin.site.register(Budget, BudgetAdmin)
+admin.site.register(CloudServiceSubscription, CloudServiceSubscriptionAdmin)
+admin.site.register(CloudAccountUsage, CloudAccountUsageAdmin)

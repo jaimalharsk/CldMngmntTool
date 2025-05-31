@@ -1,7 +1,8 @@
 from rest_framework import serializers
-from .models import Subscription
+from .models import CloudServiceSubscription
 
 class SubscriptionSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Subscription
+        model = CloudServiceSubscription
         fields = '__all__'
+
