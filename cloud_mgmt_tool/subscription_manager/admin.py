@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from .models import CustomUser, CloudAccount, CloudServiceSubscription, CloudAccountUsage
+from .models import CustomUser, CloudAccount, CloudServiceSubscription, CloudAccountUsage, GCPSyncLog
 
 # --- Custom User Admin ---
 class CustomUserAdmin(UserAdmin):
@@ -33,6 +33,16 @@ class CloudAccountUsageAdmin(admin.ModelAdmin):
     list_display = ('cloud_account', 'total_cost', 'created_on')
     list_filter = ('cloud_account__provider', 'created_on')
     search_fields = ('cloud_account__user__username',)
+
+@admin.register(CloudServiceSubscription)
+class CloudServiceSubscriptionAdmin(admin.ModelAdmin):
+    list_display = ['service_name', 'user', 'cloud_provider', 'price', 'monthly_budget']
+
+@admin.register(GCPSyncLog)
+class GCPSyncLogAdmin(admin.ModelAdmin):
+    list_display = ['timestamp', 'status', 'message']
+    list_filter = ['status']
+    search_fields = ['message']
 
 # --- Register Models ---
 admin.site.register(CustomUser, CustomUserAdmin)

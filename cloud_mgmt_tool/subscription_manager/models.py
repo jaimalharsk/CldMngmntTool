@@ -1,6 +1,7 @@
 from django.db import models
 from django.conf import settings
 from django.contrib.auth.models import AbstractUser
+from django.utils import timezone
 
 # --- Custom User Model ---
 class CustomUser(AbstractUser):
@@ -10,8 +11,6 @@ class CustomUser(AbstractUser):
     def __str__(self):
         return self.username
 
-
-# --- Unified Subscription + Budget Model ---
 class CloudServiceSubscription(models.Model):
     CLOUD_PROVIDERS = [
         ('aws', 'Amazon Web Services'),
@@ -42,7 +41,7 @@ class CloudServiceSubscription(models.Model):
     )
     service_name = models.CharField(max_length=100, default="")
     price = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
-    renewal_date = models.DateField()
+    renewal_date = models.DateField(null=True, blank=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='active')
     frequency = models.CharField(max_length=20, choices=FREQUENCY_CHOICES, default='monthly')
 
@@ -58,12 +57,17 @@ class CloudServiceSubscription(models.Model):
     )
 
     created_at = models.DateTimeField(auto_now_add=True)
-    # inside CloudServiceSubscription model
     alert_sent = models.BooleanField(default=False)
+
+    # New usage-related fields
+    usage_start = models.DateTimeField(null=True, blank=True)
+    usage_end = models.DateTimeField(null=True, blank=True)
+    usage_amount = models.DecimalField(max_digits=20, decimal_places=4, null=True, blank=True)
+    cost = models.DecimalField(max_digits=15, decimal_places=2, null=True, blank=True)
+    usage_unit = models.CharField(max_length=50, default="unknown")
 
     def __str__(self):
         return f"{self.service_name} ({self.cloud_provider.upper()}) - {self.user.username}"
-
 
 # --- Cloud Account Info ---
 class CloudAccount(models.Model):
@@ -101,3 +105,16 @@ class CloudAccountUsage(models.Model):
 
     def __str__(self):
         return f"{self.cloud_account} - ${self.total_cost:.2f} on {self.created_on.date()}"
+
+class GCPSyncLog(models.Model):
+    timestamp = models.DateTimeField(default=timezone.now)
+    status = models.CharField(max_length=100, default='unknown')
+    message = models.TextField(blank=True)
+    synced_count = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        ordering = ['-timestamp']
+
+    def __str__(self):
+        return f"{self.timestamp} - {self.status} ({self.synced_count} records)"
+

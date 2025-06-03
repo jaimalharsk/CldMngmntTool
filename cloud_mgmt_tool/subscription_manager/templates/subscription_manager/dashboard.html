@@ -321,9 +321,12 @@
   <div class="col">
     <div class="card shadow-sm p-2">Alerts: 0</div>
   </div>
-  <div class="col">
-    <div class="card shadow-sm p-2">Last Updated: Today</div>
+<div class="col">
+  <div class="card shadow-sm p-2">
+    Last Updated: <span id="lastUpdated">Loading...</span>
   </div>
+</div>
+</div>
 </div>
 
 
@@ -667,6 +670,25 @@ document.addEventListener('DOMContentLoaded', function () {
     link.download = 'chart.png';
     link.click();
   }
+
+  function updateLastUpdatedTime() {
+    const now = new Date();
+    const formatted = now.toLocaleString("en-IN", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit"
+    });
+    document.getElementById("lastUpdated").textContent = formatted;
+  }
+
+  // Run once on load
+  updateLastUpdatedTime();
+
+  // Update every minute (optional)
+  setInterval(updateLastUpdatedTime, 60000);
 </script>
 </body>
 </html>
