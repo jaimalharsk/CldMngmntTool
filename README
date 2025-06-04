@@ -1,0 +1,70 @@
+# Django Cloud Management Tool
+
+Welcome! This project can be run either directly from the USB drive or by cloning the GitHub repository. Choose whichever is easier for you.
+
+---
+
+## Option 1: Run from USB Drive
+
+### Setup Steps:
+
+1. Copy the project folder from the USB to your computer.
+
+2. Open a terminal (Command Prompt / PowerShell / Terminal).
+
+3. Navigate to the project folder:
+   ```bash
+   cd path/to/project_folder
+(Optional but recommended) Create and activate a virtual environment:
+
+On Windows:
+
+python -m venv .venv
+.venv\Scripts\activate
+On Mac/Linux:
+
+python3 -m venv .venv
+source .venv/bin/activate
+Install required packages:
+
+pip install -r requirements.txt
+Set environment variables:
+
+If you have a .env.example file, copy it to .env and fill in your secret values.
+
+Or set environment variables manually as needed.
+
+Apply database migrations:
+
+python manage.py migrate
+(Optional) Create a superuser for admin access:
+
+
+python manage.py createsuperuser
+Run the development server:
+
+python manage.py runserver
+Open your browser and visit http://127.0.0.1:8000
+
+Option 2: Clone from GitHub
+Setup Steps:
+Clone the repository:
+
+
+git clone https://github.com/yourusername/your-repo-name.git
+cd your-repo-name
+Follow steps 4 to 10 from Option 1 above to set up and run the project.
+
+Notes
+Make sure you have Python 3.8+ and pip installed on your machine.
+
+The .env file (for secrets/configuration) is not included for security reasons. Use the .env.example as a template.
+
+To stop the server, press Ctrl + C in the terminal.
+
+If you face any issues, double-check that dependencies are installed and environment variables are set.
+
+Thank you for checking out the project!
+Feel free to reach out for any questions.
+
+Good luck!
