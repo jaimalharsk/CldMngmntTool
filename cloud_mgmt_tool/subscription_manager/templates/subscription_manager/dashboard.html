@@ -84,7 +84,6 @@
   <!-- Sidebar -->
   <div class="sidebar">
     <h4>Hello, {{ request.user.username }}</h4>
-    <a href="{% url 'user_profile' %}">View Profile</a>
     <a href="#" data-bs-toggle="modal" data-bs-target="#connectCloudModal">Connect Cloud Account</a>
     <a href="#" data-bs-toggle="modal" data-bs-target="#setBudgetModal">Set Budget</a>
     <a href="{% url 'export_user_data_xlsx' %}" class="nav-link">Export Excel 📊</a>
@@ -191,7 +190,7 @@
 <div class="modal fade" id="connectCloudModal" tabindex="-1" aria-labelledby="connectCloudModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-sm modal-dialog-centered">
     <div class="modal-content">
-      <form method="post" action="{% url 'connect_cloud' %}">
+      <form id="connectCloudForm" method="post" action="{% url 'connect_cloud' %}">
         {% csrf_token %}
         <div class="modal-header">
           <h5 class="modal-title" id="connectCloudModalLabel">Connect Cloud</h5>
@@ -199,34 +198,34 @@
         </div>
         <div class="modal-body">
           <!-- Feedback -->
-         <div id="cloudConnectFeedback" class="mb-2"></div>
+          <div id="cloudConnectFeedback" class="mb-2"></div>
 
           <div class="mb-2">
-            <label for="provider">Provider</label>
-            <select name="provider" class="form-select" required id="providerSelect">
+            <label for="providerSelect">Provider</label>
+            <select name="provider" id="providerSelect" class="form-select" required>
               <option value="aws">AWS</option>
               <option value="azure">Azure</option>
               <option value="gcp">GCP</option>
             </select>
           </div>
 
-          <!-- AWS fields -->
+          <!-- AWS Fields -->
           <div id="awsFields" class="cloudFields">
             <div class="mb-2">
               <label for="aws_access_key">AWS Access Key</label>
-              <input type="text" name="aws_access_key" class="form-control">
+              <input type="text" name="aws_access_key" id="aws_access_key" class="form-control" />
             </div>
             <div class="mb-2">
               <label for="aws_secret_key">AWS Secret Key</label>
-              <input type="password" name="aws_secret_key" class="form-control">
+              <input type="password" name="aws_secret_key" id="aws_secret_key" class="form-control" />
             </div>
             <div class="mb-2">
               <label for="aws_iam_arn">IAM Role ARN</label>
-              <input type="text" name="aws_iam_arn" class="form-control">
+              <input type="text" name="aws_iam_arn" id="aws_iam_arn" class="form-control" />
             </div>
             <div class="mb-2">
               <label for="aws_region">Region</label>
-              <select name="aws_region" class="form-select">
+              <select name="aws_region" id="aws_region" class="form-select">
                 <option value="us-east-1">US East (N. Virginia)</option>
                 <option value="us-west-2">US West (Oregon)</option>
                 <option value="eu-west-1">EU (Ireland)</option>
@@ -235,23 +234,23 @@
             </div>
           </div>
 
-          <!-- Azure fields -->
-          <div id="azureFields" class="cloudFields" style="display: none;">
+          <!-- Azure Fields -->
+          <div id="azureFields" class="cloudFields" style="display:none;">
             <div class="mb-2">
               <label for="azure_subscription_id">Azure Subscription ID</label>
-              <input type="text" name="azure_subscription_id" class="form-control">
+              <input type="text" name="azure_subscription_id" id="azure_subscription_id" class="form-control" />
             </div>
             <div class="mb-2">
               <label for="azure_tenant_id">Azure Tenant ID</label>
-              <input type="text" name="azure_tenant_id" class="form-control">
+              <input type="text" name="azure_tenant_id" id="azure_tenant_id" class="form-control" />
             </div>
           </div>
 
-          <!-- GCP fields -->
-          <div id="gcpFields" class="cloudFields" style="display: none;">
+          <!-- GCP Fields -->
+          <div id="gcpFields" class="cloudFields" style="display:none;">
             <div class="mb-2">
               <label for="gcp_project_id">GCP Project ID</label>
-              <input type="text" name="gcp_project_id" class="form-control">
+              <input type="text" name="gcp_project_id" id="gcp_project_id" class="form-control" />
             </div>
           </div>
 
@@ -263,6 +262,7 @@
     </div>
   </div>
 </div>
+
 <!-- Set Budget Modal -->
 <div class="modal fade" id="setBudgetModal" tabindex="-1" aria-labelledby="setBudgetModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-sm modal-dialog-centered">
@@ -329,346 +329,125 @@
 </div>
 </div>
 
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
 
 <!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-<!-- Dashboard JS -->
-<script>
-    new bootstrap.Tooltip(document.body, {
+ <script>
+  // Initialize tooltips
+  new bootstrap.Tooltip(document.body, {
     selector: '[data-bs-toggle="tooltip"]'
   });
-   document.addEventListener('DOMContentLoaded', function () {
-    const providerSelect = document.getElementById('providerSelect');
-    const awsFields = document.getElementById('awsFields');
-    const azureFields = document.getElementById('azureFields');
-    const gcpFields = document.getElementById('gcpFields');
 
-    providerSelect.addEventListener('change', function () {
-      const selectedProvider = providerSelect.value;
-
-      // Hide all fields first
-      awsFields.style.display = 'none';
-      azureFields.style.display = 'none';
-      gcpFields.style.display = 'none';
-
-      // Show fields based on selected provider
-      if (selectedProvider === 'aws') {
-        awsFields.style.display = 'block';
-      } else if (selectedProvider === 'azure') {
-        azureFields.style.display = 'block';
-      } else if (selectedProvider === 'gcp') {
-        gcpFields.style.display = 'block';
-      }
-    });
-  });
-let resourceChart, billingChart;
-let currentType = { resource: 'line', billing: 'bar' };
-let isDarkMode = false;
-
-function toggleDarkMode() {
-  document.body.classList.toggle('dark-mode');
-  isDarkMode = !isDarkMode;
-  document.getElementById('modeIcon').className = isDarkMode ? 'bi bi-sun-fill' : 'bi bi-moon-fill';
-}
-
-function toggleChartTypes() {
-  currentType.resource = currentType.resource === 'line' ? 'bar' : 'line';
-  currentType.billing = currentType.billing === 'bar' ? 'line' : 'bar';
-  refreshCharts();
-}
-
-async function fetchChartData() {
-  try {
-    const response = await fetch('/api/chart-data/');
-    if (!response.ok) throw new Error();
-    return await response.json();
-  } catch (error) {
-    console.warn('Using sample chart data.');
-    return {
-      resource_labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-      resource_data: [45, 55, 60, 40, 70, 50, 65],
-      billing_labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
-      billing_data: [120, 135, 150, 110, 160]
-    };
-  }
-}
-
-function updateCharts(data) {
-  const { resource_labels, resource_data, billing_labels, billing_data } = data;
-
-  if (resourceChart) resourceChart.destroy();
-  if (billingChart) billingChart.destroy();
-
-  const ctx1 = document.getElementById('resourceUsageChart').getContext('2d');
-  const ctx2 = document.getElementById('billingChart').getContext('2d');
-
-  resourceChart = new Chart(ctx1, {
-    type: currentType.resource,
-    data: {
-      labels: resource_labels,
-      datasets: [
-        {
-          label: 'AWS CPU Usage (%)',
-          data: resource_data,
-          borderColor: 'rgba(75, 192, 192, 1)',
-          backgroundColor: 'rgba(75, 192, 192, 0.2)',
-          tension: 0.4,
-          fill: true
-        },
-        {
-          label: 'GCP CPU Usage (%)',
-          data: [50, 60, 70, 80, 65, 75, 85],
-          borderColor: 'rgba(153, 102, 255, 1)',
-          backgroundColor: 'rgba(153, 102, 255, 0.2)',
-          tension: 0.4,
-          fill: true
-        }
-      ]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      scales: { y: { beginAtZero: true, max: 100 } }
-    }
-  });
-
-  billingChart = new Chart(ctx2, {
-    type: currentType.billing,
-    data: {
-      labels: billing_labels,
-      datasets: [
-        {
-          label: 'AWS Monthly Cost ($)',
-          data: billing_data,
-          backgroundColor: 'rgba(255, 99, 132, 0.5)',
-          borderColor: 'rgba(255, 99, 132, 1)',
-          borderWidth: 1
-        },
-        {
-          label: 'GCP Monthly Cost ($)',
-          data: [130, 145, 160, 120, 170],
-          backgroundColor: 'rgba(54, 162, 235, 0.5)',
-          borderColor: 'rgba(54, 162, 235, 1)',
-          borderWidth: 1
-        }
-      ]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      scales: { y: { beginAtZero: true } }
-    }
-  });
-}
-
-function printChart(canvasId) {
-  const canvas = document.getElementById(canvasId);
-  const dataUrl = canvas.toDataURL();
-  const windowContent = `
-    <!DOCTYPE html>
-    <html>
-    <head><title>Print Chart</title></head>
-    <body style="margin:0; padding:0; text-align:center;">
-      <img src="${dataUrl}" style="max-width:100%; height:auto;" onload="window.print(); window.close();" />
-    </body>
-    </html>`;
-  const printWindow = window.open('', '', 'width=800,height=600');
-  printWindow.document.open();
-  printWindow.document.write(windowContent);
-  printWindow.document.close();
-}
-
-async function refreshCharts() {
-  document.getElementById('spinner').style.display = 'block';
-  const chartData = await fetchChartData();
-  updateCharts(chartData);
-  document.getElementById('spinner').style.display = 'none';
-}
-
-refreshCharts();
-setInterval(refreshCharts, 60000);
-  document.querySelector('#connectCloudForm').addEventListener('submit', function(event) {
-    event.preventDefault();  // Prevent the form from submitting the traditional way
-
-    fetch('/connect-cloud/', {
-        method: 'POST',
-        body: new FormData(this),  // Sends the form data
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            alert(data.message);  // Display success message
-        } else {
-            alert("Error: " + data.error);  // Display error message
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);  // Log any network errors
-    });
-});
-  function updateCloudUsageTable() {
-    fetch('/dashboard/ajax/')
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                const tableBody = document.querySelector('tbody');
-                tableBody.innerHTML = ''; // Clear current table content
-
-                data.cloud_data.forEach(data => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${data.account.provider}</td>
-                        <td>${data.usage.total_cost}</td>
-                        <td>${data.budget.monthly_budget}</td>
-                        <td>${data.usage.total_cost > data.budget.monthly_budget ?
-                            '<span class="badge badge-danger">Over Budget</span>' :
-                            '<span class="badge badge-success">Within Budget</span>'}
-                        </td>
-                    `;
-                    tableBody.appendChild(row);
-                });
-            } else {
-                alert('Error fetching data!');
-            }
-        })
-        .catch(error => console.error('Error fetching data:', error));
-}
-
-// Update every 60 seconds (60000 ms)
-setInterval(updateCloudUsageTable, 60000);
-
-// Initial update when the page loads
-updateCloudUsageTable();
-  document.addEventListener('DOMContentLoaded', function () {
-  const providerSelect = document.getElementById('providerSelect');
-  const awsFields = document.getElementById('awsFields');
-  const azureFields = document.getElementById('azureFields');
-  const gcpFields = document.getElementById('gcpFields');
-
-  providerSelect.addEventListener('change', function () {
-    const selectedProvider = providerSelect.value;
-    awsFields.style.display = 'none';
-    azureFields.style.display = 'none';
-    gcpFields.style.display = 'none';
-
-    if (selectedProvider === 'aws') awsFields.style.display = 'block';
-    else if (selectedProvider === 'azure') azureFields.style.display = 'block';
-    else if (selectedProvider === 'gcp') gcpFields.style.display = 'block';
-  });
-
-  document.querySelector('#connectCloudForm').addEventListener('submit', function (event) {
-    event.preventDefault();
-
-    fetch('/connect-cloud/', {
-      method: 'POST',
-      body: new FormData(this),
-    })
-    .then(response => response.json())
-    .then(data => {
-      if (data.success) {
-        alert(data.message);
-      } else {
-        alert("Error: " + data.error);
-      }
-    })
-    .catch(error => console.error('Error:', error));
-  });
-
-  function updateCloudUsageTable() {
-    fetch('/dashboard/ajax/')
-      .then(response => response.json())
-      .then(data => {
-        if (data.success) {
-          const tableBody = document.querySelector('#cloudServicesTable tbody');
-          tableBody.innerHTML = '';
-
-          data.cloud_data.forEach(item => {
-            const row = document.createElement('tr');
-            row.innerHTML = `
-              <td>${item.account.provider}</td>
-              <td>$${item.usage.total_cost.toFixed(2)}</td>
-              <td>$${item.budget.monthly_budget.toFixed(2)}</td>
-              <td>
-                ${item.usage.total_cost > item.budget.monthly_budget
-                  ? '<span class="badge badge-danger">Over Budget</span>'
-                  : '<span class="badge badge-success">Within Budget</span>'}
-              </td>
-            `;
-            tableBody.appendChild(row);
-          });
-        } else {
-          alert('Error fetching data!');
-        }
-      })
-      .catch(error => console.error('Error fetching data:', error));
+  // Theme toggle
+  let isDarkMode = false;
+  function toggleDarkMode() {
+    document.body.classList.toggle('dark-mode');
+    isDarkMode = !isDarkMode;
+    document.getElementById('modeIcon').className = isDarkMode ? 'bi bi-sun-fill' : 'bi bi-moon-fill';
   }
 
-  updateCloudUsageTable();
-  setInterval(updateCloudUsageTable, 60000);
-});
-  setInterval(() => {
-    document.querySelectorAll('.alert').forEach(el => {
-        el.classList.add('fade');
-        setTimeout(() => el.remove(), 500);
-    });
-}, 4000);
+  // Chart types
+  let resourceChart, billingChart;
+  let currentType = { resource: 'line', billing: 'bar' };
 
-document.addEventListener('DOMContentLoaded', function() {
-    {% if messages %}
-        {% for message in messages %}
-            {% if 'budget' in message.tags %}
-                alert("{{ message|escapejs }}");
-            {% elif 'cloud' in message.tags %}
-                alert("{{ message|escapejs }}");
-            {% endif %}
-        {% endfor %}
-    {% endif %}
-});
+  function toggleChartTypes() {
+    currentType.resource = currentType.resource === 'line' ? 'bar' : 'line';
+    currentType.billing = currentType.billing === 'bar' ? 'line' : 'bar';
+    refreshCharts();
+  }
 
-document.addEventListener('DOMContentLoaded', function () {
-  const cloudForm = document.querySelector('#connectCloudModal form');
-  cloudForm.addEventListener('submit', function (e) {
-    e.preventDefault();
-    const formData = new FormData(cloudForm);
+  async function fetchChartData() {
+    try {
+      const response = await fetch('/api/chart-data/');
+      if (!response.ok) throw new Error();
+      return await response.json();
+    } catch (error) {
+      console.warn('Using sample chart data.');
+      return {
+        resource_labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+        resource_data: [45, 55, 60, 40, 70, 50, 65],
+        billing_labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
+        billing_data: [120, 135, 150, 110, 160]
+      };
+    }
+  }
 
-    fetch("{% url 'connect_cloud' %}", {
-      method: "POST",
-      headers: {
-        "X-CSRFToken": formData.get("csrfmiddlewaretoken"),
+  function updateCharts(data) {
+    const { resource_labels, resource_data, billing_labels, billing_data } = data;
+
+    if (resourceChart) resourceChart.destroy();
+    if (billingChart) billingChart.destroy();
+
+    const ctx1 = document.getElementById('resourceUsageChart').getContext('2d');
+    const ctx2 = document.getElementById('billingChart').getContext('2d');
+
+    resourceChart = new Chart(ctx1, {
+      type: currentType.resource,
+      data: {
+        labels: resource_labels,
+        datasets: [
+          {
+            label: 'AWS CPU Usage (%)',
+            data: resource_data,
+            borderColor: 'rgba(75, 192, 192, 1)',
+            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+            tension: 0.4,
+            fill: true
+          },
+          {
+            label: 'GCP CPU Usage (%)',
+            data: [50, 60, 70, 80, 65, 75, 85],
+            borderColor: 'rgba(153, 102, 255, 1)',
+            backgroundColor: 'rgba(153, 102, 255, 0.2)',
+            tension: 0.4,
+            fill: true
+          }
+        ]
       },
-      body: formData,
-    })
-    .then(response => response.json())
-    .then(data => {
-      const feedbackDiv = document.getElementById("cloudConnectFeedback");
-      feedbackDiv.innerHTML = '';
-      if (data.success) {
-        feedbackDiv.innerHTML = `<div class="alert alert-success">${data.message}</div>`;
-        setTimeout(() => location.reload(), 1000);  // Optional reload to refresh dashboard data
-      } else {
-        feedbackDiv.innerHTML = `<div class="alert alert-danger">${data.error}</div>`;
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: { y: { beginAtZero: true, max: 100 } }
       }
-    })
-    .catch(error => {
-      document.getElementById("cloudConnectFeedback").innerHTML =
-        `<div class="alert alert-danger">An unexpected error occurred.</div>`;
     });
-  });
-});
 
-    function downloadChart() {
-    const link = document.createElement('a');
-    link.href = document.getElementById('resourceUsageChart').toDataURL();
-    link.download = 'chart.png';
-    link.click();
+    billingChart = new Chart(ctx2, {
+      type: currentType.billing,
+      data: {
+        labels: billing_labels,
+        datasets: [
+          {
+            label: 'AWS Monthly Cost ($)',
+            data: billing_data,
+            backgroundColor: 'rgba(255, 99, 132, 0.5)',
+            borderColor: 'rgba(255, 99, 132, 1)',
+            borderWidth: 1
+          },
+          {
+            label: 'GCP Monthly Cost ($)',
+            data: [130, 145, 160, 120, 170],
+            backgroundColor: 'rgba(54, 162, 235, 0.5)',
+            borderColor: 'rgba(54, 162, 235, 1)',
+            borderWidth: 1
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: { y: { beginAtZero: true } }
+      }
+    });
   }
 
-      function downloadChart() {
-    const link = document.createElement('a');
-    link.href = document.getElementById('billingChart').toDataURL();
-    link.download = 'chart.png';
-    link.click();
+  async function refreshCharts() {
+    document.getElementById('spinner').style.display = 'block';
+    const data = await fetchChartData();
+    updateCharts(data);
+    document.getElementById('spinner').style.display = 'none';
   }
 
   function updateLastUpdatedTime() {
@@ -684,11 +463,157 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById("lastUpdated").textContent = formatted;
   }
 
-  // Run once on load
-  updateLastUpdatedTime();
+  function printChart(canvasId) {
+    const canvas = document.getElementById(canvasId);
+    const dataUrl = canvas.toDataURL();
+    const windowContent = `
+      <!DOCTYPE html>
+      <html>
+      <head><title>Print Chart</title></head>
+      <body style="margin:0; padding:0; text-align:center;">
+        <img src="${dataUrl}" style="max-width:100%; height:auto;" onload="window.print(); window.close();" />
+      </body>
+      </html>`;
+    const printWindow = window.open('', '', 'width=800,height=600');
+    printWindow.document.open();
+    printWindow.document.write(windowContent);
+    printWindow.document.close();
+  }
 
-  // Update every minute (optional)
-  setInterval(updateLastUpdatedTime, 60000);
+  function downloadChart(id) {
+    const canvas = document.getElementById(id);
+    const link = document.createElement('a');
+    link.href = canvas.toDataURL();
+    link.download = `${id}.png`;
+    link.click();
+  }
+
+  function updateCloudUsageTable() {
+  fetch('/dashboard/ajax/')
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        const tableBody = document.querySelector('#cloudServicesTable tbody');
+
+        // Do NOT clear existing rows (per your earlier logic)
+        // But if you want to limit total rows to 3 including existing ones,
+        // consider clearing first — let me know if needed.
+
+        console.log('AJAX cloud_data:', data.cloud_data);  // Debug
+
+        // Limit to 3 new rows max
+        data.cloud_data.slice(0, 3).forEach(item => {
+          const usagePercent = item.budget.monthly_budget > 0
+            ? (item.usage.total_cost / item.budget.monthly_budget) * 100
+            : 0;
+          const threshold = 80;
+          const isOverBudget = usagePercent > threshold;
+          const statusBadge = isOverBudget
+            ? '<span class="badge bg-danger">Over Budget</span>'
+            : '<span class="badge bg-success">OK</span>';
+          const progressBarClass = isOverBudget ? 'bg-danger' : 'bg-success';
+
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td>${item.account.provider}</td>
+            <td>
+              <div class="progress" style="height: 20px;">
+                <div class="progress-bar ${progressBarClass}" role="progressbar" style="width: ${usagePercent.toFixed(1)}%;">
+                  ${usagePercent.toFixed(1)}%
+                </div>
+              </div>
+            </td>
+            <td>$${item.usage.total_cost.toFixed(2)}</td>
+            <td>${statusBadge}</td>
+            <td>$${item.budget.monthly_budget.toFixed(2)}</td>
+            <td>${threshold}%</td>
+          `;
+          tableBody.appendChild(row);
+        });
+      } else {
+        alert('Error fetching data!');
+      }
+    })
+    .catch(error => console.error('Error fetching data:', error));
+}
+
+
+  document.addEventListener('DOMContentLoaded', function () {
+    // Initial chart & table setup
+    refreshCharts();
+    updateCloudUsageTable();
+    updateLastUpdatedTime();
+    setInterval(refreshCharts, 60000);
+    setInterval(updateCloudUsageTable, 60000);
+    setInterval(updateLastUpdatedTime, 60000);
+
+    // Auto-dismiss alerts
+    setInterval(() => {
+      document.querySelectorAll('.alert').forEach(el => {
+        el.classList.add('fade');
+        setTimeout(() => el.remove(), 500);
+      });
+    }, 4000);
+
+    // Provider select logic
+    const providerSelect = document.getElementById('providerSelect');
+    const awsFields = document.getElementById('awsFields');
+    const azureFields = document.getElementById('azureFields');
+    const gcpFields = document.getElementById('gcpFields');
+
+    providerSelect.addEventListener('change', function () {
+      const selected = providerSelect.value;
+      awsFields.style.display = 'none';
+      azureFields.style.display = 'none';
+      gcpFields.style.display = 'none';
+
+      if (selected === 'aws') awsFields.style.display = 'block';
+      else if (selected === 'azure') azureFields.style.display = 'block';
+      else if (selected === 'gcp') gcpFields.style.display = 'block';
+    });
+
+    // Form submission with fetch API (connect cloud account)
+    const cloudForm = document.querySelector('#connectCloudModal form');
+    cloudForm.addEventListener('submit', function (e) {
+      e.preventDefault();
+      const formData = new FormData(cloudForm);
+
+      fetch("{% url 'connect_cloud' %}", {
+        method: "POST",
+        headers: {
+          "X-CSRFToken": formData.get("csrfmiddlewaretoken"),
+        },
+        body: formData,
+      })
+      .then(response => response.json())
+      .then(data => {
+        const feedbackDiv = document.getElementById("cloudConnectFeedback");
+        feedbackDiv.innerHTML = '';
+        if (data.success) {
+          feedbackDiv.innerHTML = `<div class="alert alert-success">${data.message}</div>`;
+          // Instead of reload, update table and hide modal:
+          updateCloudUsageTable();
+          const connectCloudModal = document.getElementById('connectCloudModal');
+          const modalInstance = bootstrap.Modal.getInstance(connectCloudModal);
+          if (modalInstance) modalInstance.hide();
+          cloudForm.reset();
+        } else {
+          feedbackDiv.innerHTML = `<div class="alert alert-danger">${data.error}</div>`;
+        }
+      })
+      .catch(() => {
+        document.getElementById("cloudConnectFeedback").innerHTML =
+          `<div class="alert alert-danger">An unexpected error occurred.</div>`;
+      });
+    });
+
+    // Flash message alerts
+    {% if messages %}
+      {% for message in messages %}
+        alert("{{ message|escapejs }}");
+      {% endfor %}
+    {% endif %}
+  });
 </script>
 </body>
 </html>

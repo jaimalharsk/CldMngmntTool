@@ -1,3 +1,5 @@
+from collections import defaultdict
+
 from django.contrib.auth import login, get_user_model
 from django.shortcuts import render, redirect
 from django.http import JsonResponse, HttpResponse
@@ -20,6 +22,9 @@ from .cloud_api import CloudAPI
 from .payment_api import PaymentAPI
 from .auth_api import AuthAPI
 from django.core.mail import send_mail
+#from cloud_mgmt_tool.subscription_manager.gcp_usage import fetch_gcp_usage_and_create_subscriptions
+from django.urls import reverse
+
 
 User = get_user_model()
 
@@ -68,6 +73,9 @@ def home(request):
 @login_required
 def dashboard(request):
     user = request.user
+    CloudServiceSubscription.objects.filter(user=user, cloud_provider='gcp').delete()
+
+    subscriptions = CloudServiceSubscription.objects.filter(user=user).exclude(cloud_provider='gcp')
 
     if request.method == 'POST':
         if 'add_subscription' in request.POST:
@@ -173,8 +181,6 @@ def dashboard(request):
 
 
 
-
-# ========== Cloud Account ==========
 def connect_cloud(request):
     if request.method == 'POST':
         provider = request.POST.get('provider')
@@ -200,7 +206,6 @@ def connect_cloud(request):
                     role_arn=aws_iam_arn,
                 )
                 return JsonResponse({"success": True, "message": "AWS account connected successfully!"})
-
             except NoCredentialsError:
                 return JsonResponse({"success": False, "error": "AWS credentials are missing or invalid."})
             except ClientError as e:
@@ -214,7 +219,35 @@ def connect_cloud(request):
                     provider=provider,
                     project_id=project_id
                 )
-                return JsonResponse({"success": True, "message": "GCP account connected successfully!"})
+                try:
+                    dummy_services = [
+                        {"service_name": "GCP Compute Engine", "price": 100.00},
+                        {"service_name": "GCP Cloud Storage", "price": 50.50},
+                        {"service_name": "GCP BigQuery", "price": 80.25},
+                    ]
+                    for service in dummy_services:
+                        CloudServiceSubscription.objects.create(
+                            user=request.user,
+                            cloud_provider='gcp',
+                            service_name=service['service_name'],
+                            price=service['price'],
+                            status='active',
+                            frequency='monthly',
+                            monthly_budget=service['price'],
+                            alert_threshold=80,
+                            is_temporary=True,
+                        )
+                    return JsonResponse({
+                        "success": True,
+                        "message": "✅ GCP account connected and 3 dummy subscriptions added.",
+                        "redirect_url": reverse('dashboard')
+                    })
+                except Exception as e:
+                    return JsonResponse({
+                        "success": False,
+                        "error": f"GCP account saved, but adding subscriptions failed: {str(e)}"
+                    })
+
             else:
                 return JsonResponse({"success": False, "error": "Invalid GCP project ID."})
 
@@ -345,28 +378,48 @@ def login_redirect(request, provider):
     auth_api = AuthAPI(provider)
     return JsonResponse({"message": auth_api.login_url()})
 
-
-# ========== AJAX Dashboard Data ==========
+@login_required
 def dashboard_ajax(request):
-    cloud_accounts = CloudAccount.objects.filter(user=request.user)
-    usage_data = CloudAccountUsage.objects.filter(cloud_account__in=cloud_accounts).order_by('-created_on')
-    subscriptions = CloudServiceSubscription.objects.filter(user=request.user)
+    try:
+        cloud_accounts = CloudAccount.objects.filter(user=request.user)
+        subscriptions = CloudServiceSubscription.objects.filter(user=request.user)
 
-    usage_map = {}
-    for usage in usage_data:
-        usage_map.setdefault(usage.cloud_account_id, usage)
+        usage_totals = defaultdict(float)
+        budget_totals = defaultdict(float)
 
-    budget_map = {sub.cloud_provider: sub for sub in subscriptions}
+        allowed_gcp_services = {
+            "GCP Compute Engine", "GCP Cloud Storage", "GCP BigQuery"
+        }
 
-    cloud_data = []
-    for account in cloud_accounts:
-        usage = usage_map.get(account.id)
-        budget = budget_map.get(account.provider)
+        for sub in subscriptions:
+            # Allow only dummy GCP subscriptions, block real/fetched ones
+            if sub.cloud_provider == 'gcp' and sub.service_name not in allowed_gcp_services:
+                continue
 
-        cloud_data.append({
-            'account': {'provider': account.provider},
-            'usage': {'total_cost': usage.total_cost if usage else 0},
-            'budget': {'monthly_budget': budget.monthly_budget if budget else 0},
-        })
+            price = float(sub.price) if sub.price else 0.0
+            budget = float(sub.monthly_budget) if sub.monthly_budget else 0.0
+            usage_totals[sub.cloud_provider.lower()] += price
+            budget_totals[sub.cloud_provider.lower()] += budget
 
-    return JsonResponse({'success': True, 'cloud_data': cloud_data})
+        cloud_data = []
+        for account in cloud_accounts:
+            provider = account.provider.lower()
+            if provider == 'gcp' and not subscriptions.filter(cloud_provider='gcp', service_name__in=allowed_gcp_services).exists():
+                continue
+
+            cloud_data.append({
+                'account': {'provider': provider},
+                'usage': {'total_cost': usage_totals.get(provider, 0)},
+                'budget': {'monthly_budget': budget_totals.get(provider, 0)},
+            })
+
+        return JsonResponse({'success': True, 'cloud_data': cloud_data})
+
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return JsonResponse({'success': False, 'error': str(e)}, status=500)
+
+
+
+

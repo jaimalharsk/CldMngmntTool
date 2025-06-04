@@ -1,0 +1,1 @@
+default_app_config = 'cloud_mgmt_tool.subscription_manager.apps.SubscriptionManagerConfig'

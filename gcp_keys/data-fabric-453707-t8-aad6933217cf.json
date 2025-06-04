@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "data-fabric-453707-t8",
+  "private_key_id": "aad6933217cf4431f124a589e45743e888f9a027",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvwIBADANBgkqhkiG9w0BAQEFAASCBKkwggSlAgEAAoIBAQDv1FF4rVFletdo\neJK1Yl9tc4S7yD+2lxmnFKeGPRRINr2+qRfaTUjxTxwz3VaLw7AdpwoqCwVwHw9/\nshibCp6bYGPymyC66SlMgvltrty6X79flGc/a6jpSYffi3Yrk9Ra/XK0nzvBs0Wv\nVElzoA9TD0J7j4hsk1qsvvC1/WO72OAlZIrVUUp/NUlCaTJvxiIz5e8Ovcq/Nzwm\ngA0VZHueKG7C92ZgfWqpqC4np5OCirVzuIqFDrNaRFDl5041f1YRUitQla3aPN2i\ngnhSxFtdAFNbK3T2fKi28JfMp0lX75rjudA3zcbZTat4jNWymCLMLQidi7V5WdYE\nKu0b+jXPAgMBAAECggEAAdMBHaRf2qBBFDPaldOeOzRmPZFr3qUulkVDcvNy/Iui\nDNm3azssQ12hLsnPtzdxVwBmxOQZkf1Cfmup4UAG7dKhX/6LFLDiVgknAY0Tc713\ntK/pyyM0ATZEeNBUQUeaFWkZHsOZTkNhU9CV0HHWvACBNnRkisLiLS80oIXBZPPh\nF5ep3I7XyOfYVfwpGVUAW3SND+KrxgkZACalXBLLA4+aOWhcjn89D58kON9qcS/p\nQ3oy91gbl8FAmEE/uz13R5qXVJhr7TjVwYmEcGcCApoABoo5HxkC6UpTN+o46Mi3\nhLOsKeJMFJQHjvE2BfTK9kKoGepzUG/8hPX0CpTEpQKBgQD4VI93dARrBuhzOO/c\nYqMOtIK4QNbv+vuqgbYxiB+ts0pyGicdIQpM/3VTNrek7mhlZXj49OTQbTQ84lA+\nSdz5TUHePnihpDphPGOxD1EG8lef02UBE643LPRne4zB8YwcaEwO+H1/dQj7f7RK\nCs5cXiu5/1nRT+s3bbWNoE8q9QKBgQD3PItoACLX5VxgAosCmtKcHyVS0yydStix\nnMDdfkw0s1hR5uhw3PR/kO5gthDkxL0rpsn/Lo2LsdQSNoLIzPoq6qVC9f7+h0WD\np3TPAgBXcRKuoZTQKJRop2Ru2HO37SDV02cl3003R3Qep5FwGFkYT+buSrfOppTm\ngrOCpJerMwKBgQCjSz+X5iNtmXpLIjqf6gCdD9gRfxmXbqwEwAzlX0StfQNMKqRj\nxDE41pb45Dc4bkkZu/Mjii3YXKcIDi2D+CAlk0bn9J5wdESrYgGQEalPbxZtk52M\naruZrqb8UUMK2WIv3+l7wq0LnhMNBjmwopB2LrqEMUSHngznQu4qtiq47QKBgQCO\n+Bn9eCauBlpWwuG0DefAlFo2/RsNklygyO7WptRWnWdzZT4BFiTlJ+BRWLeIMyTZ\ne0fQIxGDOMBUD+WtTKtV6f7LLAnbEkpmiY2Ir7WW2zJcfd/aR70aj8IKP20bbSrR\nu8AoLGswjkdd+rSlx86tunbmUZrdC4OLkQVRhPCX9QKBgQDW3O54NRzwx5qIT3Mc\ntS3/i9dldoY1gom+KHQdquvud1klYgca8jNAR/0TJE8PTXcNreuE8mK0ErAiCxFj\nFLnajQE4x8FvrPUdOl6uju0Vcvu7DNsrD2K6ZLAbYUIfTgfXqYL5Mwlswlk7yHso\ny3oTDsnvqKgwKBW9Qq6mu6n9Pg==\n-----END PRIVATE KEY-----\n",
+  "client_email": "billing-reader@data-fabric-453707-t8.iam.gserviceaccount.com",
+  "client_id": "108546590240870241215",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/billing-reader%40data-fabric-453707-t8.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}

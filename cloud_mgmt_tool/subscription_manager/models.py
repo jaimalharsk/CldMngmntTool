@@ -12,6 +12,7 @@ class CustomUser(AbstractUser):
         return self.username
 
 class CloudServiceSubscription(models.Model):
+    is_temporary = models.BooleanField(default=False)
     CLOUD_PROVIDERS = [
         ('aws', 'Amazon Web Services'),
         ('gcp', 'Google Cloud Platform'),
